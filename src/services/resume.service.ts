@@ -10,6 +10,10 @@ export interface ResumeSummary {
   target_role: string | null;
   ats_score: number | null;
   updated_at: string;
+  created_at: string;
+  source_text: string | null;
+  github_url: string | null;
+  linkedin_url: string | null;
 }
 
 export interface NewResumeInput {
@@ -29,7 +33,9 @@ export const resumeService = {
   async list(): Promise<ResumeSummary[]> {
     const { data, error } = await supabase
       .from("resumes")
-      .select("id, title, template, target_role, ats_score, updated_at")
+      .select(
+        "id, title, template, target_role, ats_score, updated_at, created_at, source_text, github_url, linkedin_url",
+      )
       .order("updated_at", { ascending: false });
     if (error) throw error;
     return data ?? [];

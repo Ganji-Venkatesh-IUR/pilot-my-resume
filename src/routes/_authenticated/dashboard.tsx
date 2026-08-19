@@ -4,14 +4,29 @@ import {
   ArrowRight,
   FileText,
   Gauge,
-  LayoutTemplate,
-  Loader2,
+  Github,
+  Linkedin,
+  Lightbulb,
+  Plus,
   Sparkles,
   UploadCloud,
 } from "lucide-react";
 import { PageHeader } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
-import { resumeService } from "@/services/resume.service";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ListSkeleton } from "@/components/common/LoadingState";
+import {
+  EmptyState,
+  ProgressMeter,
+  QuickActionCard,
+  SectionCard,
+  StatCard,
+  SurfaceCard,
+} from "@/components/dashboard/DashboardCards";
+import { resumeService, type ResumeSummary } from "@/services/resume.service";
+import { profileService } from "@/services/profile.service";
+import { useSession } from "@/hooks/useSession";
+import { formatDate, formatRelative } from "@/utils/format";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -28,48 +43,80 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
-interface ResumeRow {
-  id: string;
-  title: string;
-  template: string;
-  target_role: string | null;
-  ats_score: number | null;
-  updated_at: string;
-}
-
 const QUICK_ACTIONS = [
   {
-    to: "/upload" as const,
-    label: "Upload a resume",
-    description: "Drop a file or paste your GitHub and LinkedIn links.",
+    to: "/upload",
+    label: "Upload resume",
+    description: "Drop a PDF or paste the text of your current resume.",
     icon: UploadCloud,
   },
   {
-    to: "/builder" as const,
-    label: "Start a new draft",
-    description: "Name it, set a target role and let the AI write it.",
-    icon: FileText,
+    to: "/upload",
+    label: "Import GitHub",
+    description: "Turn your repos and README highlights into bullets.",
+    icon: Github,
   },
   {
-    to: "/templates" as const,
-    label: "Browse templates",
-    description: "Five parser-safe layouts, previewed side by side.",
-    icon: LayoutTemplate,
+    to: "/upload",
+    label: "Add LinkedIn",
+    description: "Pull roles and skills straight from your profile link.",
+    icon: Linkedin,
   },
   {
-    to: "/copilot" as const,
-    label: "Open AI copilot",
-    description: "Rewrite bullets, tone and keywords in a chat.",
+    to: "/copilot",
+    label: "Open AI Copilot",
+    description: "Rewrite tone, bullets and keywords in a chat.",
     icon: Sparkles,
   },
-];
+] as const;
+
+/** Derives an actionable suggestion list from the user's real data. */
+function buildSuggestions(resumes: ResumeSummary[], completion: number) {
+  const suggestions: Array<{ text: string; to: "/upload" | "/builder" | "/copilot" | "/profile" }> =
+    [];
+
+  if (resumes.length === 0) {
+    suggestions.push({ text: "Upload your current resume to get a first ATS score.", to: "/upload" });
+  }
+  if (completion < 100) {
+    suggestions.push({
+      text: "Complete your profile — headline and links get reused on every resume.",
+      to: "/profile",
+    });
+  }
+  const weak = resumes.find((r) => (r.ats_score ?? 100) < 75);
+  if (weak) {
+    suggestions.push({
+      text: `"${weak.title}" scores below 75. Ask the copilot to tighten its bullets.`,
+      to: "/copilot",
+    });
+  }
+  const noRole = resumes.find((r) => !r.target_role);
+  if (noRole) {
+    suggestions.push({
+      text: `Set a target role on "${noRole.title}" so the AI can match keywords.`,
+      to: "/builder",
+    });
+  }
+  if (resumes.length > 0 && resumes.length < 3) {
+    suggestions.push({
+      text: "Create a role-specific variant — tailored resumes convert better.",
+      to: "/builder",
+    });
+  }
+  return suggestions.slice(0, 3);
+}
 
 function Dashboard() {
-  const { data: resumes, isLoading } = useQuery({
+  const { user } = useSession();
+
+  const { data: resumes, isLoading: loadingResumes } = useQuery({
     queryKey: ["resumes"],
-    queryFn: async (): Promise<ResumeRow[]> => {
-      return resumeService.list();
-    },
+    queryFn: () => resumeService.list(),
+  });
+  const { data: profile, isLoading: loadingProfile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: () => profileService.getCurrent(),
   });
 
   const list = resumes ?? [];
@@ -77,46 +124,76 @@ function Dashboard() {
   const avgAts = scored.length
     ? Math.round(scored.reduce((sum, r) => sum + (r.ats_score ?? 0), 0) / scored.length)
     : null;
-  const lastUpdated = list[0]?.updated_at;
 
-  const summary = [
-    { label: "Resumes", value: String(list.length), icon: FileText },
-    { label: "Average ATS score", value: avgAts === null ? "—" : `${avgAts}`, icon: Gauge },
-    {
-      label: "Last activity",
-      value: lastUpdated ? new Date(lastUpdated).toLocaleDateString() : "—",
-      icon: Sparkles,
-    },
+  // Profile completion: name, headline, location and the three links.
+  const profileFields = [
+    profile?.full_name,
+    profile?.headline,
+    profile?.location,
+    profile?.github_url,
+    profile?.linkedin_url,
+    profile?.website_url,
   ];
+  const filled = profileFields.filter((value) => Boolean(value && String(value).trim())).length;
+  const completion = Math.round((filled / profileFields.length) * 100);
+
+  const firstName = (profile?.full_name || user?.email || "there").split(/[\s@]/)[0];
+  const uploads = list.filter((r) => r.source_text || r.github_url || r.linkedin_url).slice(0, 4);
+  const suggestions = buildSuggestions(list, completion);
 
   return (
     <>
       <PageHeader
-        title="Dashboard"
+        title={`Welcome back, ${firstName}`}
         description="Everything you need to ship an ATS-friendly resume today."
         actions={
           <Button asChild>
-            <Link to="/upload">
-              <UploadCloud className="size-4" aria-hidden /> New resume
+            <Link to="/builder">
+              <Plus className="size-4" aria-hidden /> Create resume
             </Link>
           </Button>
         }
       />
 
-      <section aria-label="Summary" className="grid gap-4 sm:grid-cols-3">
-        {summary.map(({ label, value, icon: Icon }) => (
-          <div key={label} className="rounded-xl border border-border bg-card p-5 shadow-soft">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                {label}
-              </p>
-              <Icon className="size-4 text-muted-foreground" aria-hidden />
-            </div>
-            <p className="mt-3 font-display text-3xl font-semibold tabular-nums">
-              {isLoading ? "…" : value}
+      <section aria-label="Overview" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          label="Resumes"
+          value={String(list.length)}
+          hint={list.length === 1 ? "1 draft in your workspace" : `${list.length} drafts saved`}
+          icon={FileText}
+          loading={loadingResumes}
+        />
+        <StatCard
+          label="Average ATS"
+          value={avgAts === null ? "—" : String(avgAts)}
+          hint={scored.length ? `across ${scored.length} scored resumes` : "score a resume to see this"}
+          icon={Gauge}
+          loading={loadingResumes}
+        />
+        <StatCard
+          label="Last activity"
+          value={list[0] ? formatRelative(list[0].updated_at) : "—"}
+          hint={list[0] ? list[0].title : "no edits yet"}
+          icon={Sparkles}
+          loading={loadingResumes}
+        />
+        <SurfaceCard>
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Profile
             </p>
+            <Link to="/profile" className="text-xs text-primary hover:underline">
+              Edit
+            </Link>
           </div>
-        ))}
+          {loadingProfile ? (
+            <Skeleton className="mt-4 h-9 w-full" />
+          ) : (
+            <div className="mt-4">
+              <ProgressMeter value={completion} label="Completion" />
+            </div>
+          )}
+        </SurfaceCard>
       </section>
 
       <section aria-label="Quick actions" className="mt-8">
@@ -124,80 +201,140 @@ function Dashboard() {
           Quick actions
         </h2>
         <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {QUICK_ACTIONS.map(({ to, label, description, icon: Icon }) => (
-            <li key={to}>
-              <Link
-                to={to}
-                className="flex h-full flex-col gap-2 rounded-xl border border-border bg-card p-5 shadow-soft transition-shadow hover:shadow-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <span className="flex size-9 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-                  <Icon className="size-4" aria-hidden />
-                </span>
-                <span className="font-medium">{label}</span>
-                <span className="text-sm text-muted-foreground">{description}</span>
-              </Link>
+          {QUICK_ACTIONS.map((action) => (
+            <li key={action.label}>
+              <QuickActionCard
+                to={action.to}
+                label={action.label}
+                description={action.description}
+                icon={action.icon}
+              />
             </li>
           ))}
         </ul>
       </section>
 
-      <section aria-label="Recent resumes" className="mt-8">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Recent resumes
-          </h2>
-          <Link
-            to="/builder"
-            className="text-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            View all
-          </Link>
-        </div>
+      <div className="mt-8 grid gap-6 lg:grid-cols-3">
+        <SectionCard
+          title="Recent activity"
+          className="lg:col-span-2"
+          action={
+            <Link to="/builder" className="text-sm text-primary hover:underline">
+              View all
+            </Link>
+          }
+        >
+          {loadingResumes ? (
+            <ListSkeleton rows={3} />
+          ) : list.length === 0 ? (
+            <EmptyState
+              message="No resumes yet — start from an upload or a blank draft."
+              actionLabel="Upload your resume"
+              actionTo="/upload"
+            />
+          ) : (
+            <ul className="space-y-3">
+              {list.slice(0, 5).map((resume) => (
+                <li key={resume.id}>
+                  <Link
+                    to="/resume/$resumeId"
+                    params={{ resumeId: resume.id }}
+                    className="flex items-center gap-4 rounded-lg border border-border p-4 transition-shadow hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+                      <FileText className="size-5" aria-hidden />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-medium">{resume.title}</span>
+                      <span className="block truncate text-sm text-muted-foreground">
+                        {resume.target_role || "No target role"} ·{" "}
+                        {formatRelative(resume.updated_at)}
+                      </span>
+                    </span>
+                    {resume.ats_score !== null && (
+                      <span className="hidden rounded-full bg-success/15 px-2.5 py-1 text-xs font-medium text-success sm:inline">
+                        ATS {resume.ats_score}
+                      </span>
+                    )}
+                    <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </SectionCard>
 
-        {isLoading ? (
-          <p className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="size-4 animate-spin" aria-hidden /> Loading…
-          </p>
-        ) : list.length > 0 ? (
-          <ul className="space-y-3">
-            {list.slice(0, 5).map((resume) => (
-              <li key={resume.id}>
-                <Link
-                  to="/resume/$resumeId"
-                  params={{ resumeId: resume.id }}
-                  className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 shadow-soft transition-shadow hover:shadow-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-                    <FileText className="size-5" aria-hidden />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate font-medium">{resume.title}</span>
-                    <span className="block truncate text-sm text-muted-foreground">
-                      {resume.target_role || "No target role"} ·{" "}
-                      {new Date(resume.updated_at).toLocaleDateString()}
-                    </span>
-                  </span>
-                  {resume.ats_score !== null && (
-                    <span className="rounded-full bg-success/15 px-2.5 py-1 text-xs font-medium text-success">
-                      ATS {resume.ats_score}
-                    </span>
-                  )}
-                  <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="rounded-xl border border-dashed border-border p-10 text-center">
-            <p className="text-sm text-muted-foreground">
-              No resumes yet — start from an upload or a blank draft.
-            </p>
-            <Button asChild className="mt-4">
-              <Link to="/upload">Upload your resume</Link>
-            </Button>
-          </div>
-        )}
-      </section>
+        <div className="space-y-6">
+          <SectionCard
+            title="Recent uploads"
+            action={
+              <Link to="/upload" className="text-sm text-primary hover:underline">
+                Upload
+              </Link>
+            }
+          >
+            {loadingResumes ? (
+              <ListSkeleton rows={2} />
+            ) : uploads.length === 0 ? (
+              <EmptyState
+                message="No sources imported yet."
+                actionLabel="Add a source"
+                actionTo="/upload"
+              />
+            ) : (
+              <ul className="space-y-3">
+                {uploads.map((item) => {
+                  const SourceIcon = item.github_url
+                    ? Github
+                    : item.linkedin_url
+                      ? Linkedin
+                      : UploadCloud;
+                  const source = item.github_url
+                    ? "GitHub import"
+                    : item.linkedin_url
+                      ? "LinkedIn import"
+                      : "Pasted resume";
+                  return (
+                    <li key={item.id} className="flex items-center gap-3">
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                        <SourceIcon className="size-4" aria-hidden />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-medium">{item.title}</span>
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {source} · {formatDate(item.created_at)}
+                        </span>
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </SectionCard>
+
+          <SectionCard title="AI suggestions">
+            {loadingResumes || loadingProfile ? (
+              <ListSkeleton rows={2} />
+            ) : suggestions.length === 0 ? (
+              <EmptyState message="You're all caught up — nothing to fix right now." />
+            ) : (
+              <ul className="space-y-3">
+                {suggestions.map((suggestion) => (
+                  <li key={suggestion.text}>
+                    <Link
+                      to={suggestion.to}
+                      className="flex gap-3 rounded-lg border border-border p-3 text-sm transition-shadow hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      <Lightbulb className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                      <span>{suggestion.text}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </SectionCard>
+        </div>
+      </div>
     </>
   );
 }
