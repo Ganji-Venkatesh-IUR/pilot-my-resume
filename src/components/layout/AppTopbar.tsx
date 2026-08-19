@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { supabase } from "@/integrations/supabase/client";
+import { authService } from "@/services/auth.service";
 import { useSession } from "@/hooks/useSession";
 
 /** Top bar: logo (mobile), global search, notifications and the profile menu. */
@@ -39,7 +39,7 @@ export function AppTopbar({ onOpenNav }: { onOpenNav: () => void }) {
   async function handleSignOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
-    await supabase.auth.signOut();
+    await authService.signOut();
     navigate({ to: "/login", replace: true });
   }
 

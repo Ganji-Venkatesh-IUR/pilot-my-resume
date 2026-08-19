@@ -93,8 +93,9 @@ function BuilderPage() {
   }
 
   async function handleDelete(id: string) {
-    const { error } = await supabase.from("resumes").delete().eq("id", id);
-    if (error) {
+    try {
+      await resumeService.remove(id);
+    } catch {
       toast.error("Could not delete that resume.");
       return;
     }
