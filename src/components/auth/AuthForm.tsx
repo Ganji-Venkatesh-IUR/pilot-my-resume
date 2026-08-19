@@ -10,6 +10,7 @@ import { authService } from "@/services/auth.service";
 import { toErrorMessage } from "@/services/api-client";
 import { useSession } from "@/hooks/useSession";
 import { env } from "@/config/env";
+import { fieldErrors, signInSchema, signUpSchema } from "@/lib/validation";
 
 export type AuthMode = "signin" | "signup";
 
@@ -20,6 +21,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const { session, loading } = useSession();
   const navigate = useNavigate();
 
@@ -30,6 +32,16 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+
+    // Validate on the client for fast feedback; the backend enforces its own rules.
+    const parsed = isSignup
+      ? signUpSchema.safeParse({ fullName, email, password })
+      : signInSchema.safeParse({ email, password });
+    if (!parsed.success) {
+      setErrors(fieldErrors(parsed.error));
+      return;
+    }
+    setErrors({});
     setBusy(true);
     try {
       if (isSignup) {
@@ -80,7 +92,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
               : "Sign in to your resume workspace."}
           </p>
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
             {isSignup && (
               <div className="space-y-1.5">
                 <Label htmlFor="fullName">Full name</Label>
@@ -90,8 +102,11 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Ada Lovelace"
                   autoComplete="name"
-                  required
+                  aria-invalid={Boolean(errors["fullName"])}
                 />
+                {errors["fullName"] && (
+                  <p className="text-sm text-destructive">{errors["fullName"]}</p>
+                )}
               </div>
             )}
             <div className="space-y-1.5">
@@ -103,8 +118,9 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 autoComplete="email"
-                required
+                aria-invalid={Boolean(errors["email"])}
               />
+              {errors["email"] && <p className="text-sm text-destructive">{errors["email"]}</p>}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="password">Password</Label>
@@ -115,9 +131,21 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 autoComplete={isSignup ? "new-password" : "current-password"}
-                minLength={6}
-                required
+                aria-invalid={Boolean(errors["password"])}
               />
+              {errors["password"] && (
+                <p className="text-sm text-destructive">{errors["password"]}</p>
+              )}
+              {!isSignup && (
+                <div className="pt-1 text-right">
+                  <Link
+                    to="/forgot-password"
+                    className="text-sm text-muted-foreground hover:text-foreground"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+              )}
             </div>
             <Button type="submit" className="w-full" disabled={busy}>
               {busy && <Spinner />}
