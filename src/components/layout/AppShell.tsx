@@ -2,6 +2,8 @@ import { useState, type ReactNode } from "react";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { AppTopbar } from "./AppTopbar";
 import { SidebarNav } from "./AppSidebar";
+import { Footer } from "./Footer";
+import { PageContainer } from "./PageContainer";
 
 /** Application chrome: fixed sidebar on desktop, drawer on mobile, top bar everywhere. */
 export function AppShell({ children }: { children: ReactNode }) {
