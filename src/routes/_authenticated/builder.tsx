@@ -14,8 +14,9 @@ import { TEMPLATES, type TemplateId } from "@/lib/resume-schema";
 
 export const Route = createFileRoute("/_authenticated/builder")({
   validateSearch: (search: Record<string, unknown>) => ({
-    q: typeof search.q === "string" ? search.q : undefined,
-    template: typeof search.template === "string" ? (search.template as TemplateId) : undefined,
+    q: typeof search["q"] === "string" ? (search["q"] as string) : undefined,
+    template:
+      typeof search["template"] === "string" ? (search["template"] as TemplateId) : undefined,
   }),
   head: () => ({
     meta: [
