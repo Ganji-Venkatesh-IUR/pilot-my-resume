@@ -60,9 +60,7 @@ function TemplatesPage() {
         description="Every template is single-flow and parser-safe. Pick one to start a new resume."
         actions={
           <Button
-            onClick={() =>
-              navigate({ to: "/builder", search: { q: undefined, template: selected } })
-            }
+            onClick={() => navigate({ to: "/builder", search: { template: selected } })}
           >
             Use {TEMPLATES.find((t) => t.id === selected)?.name}
           </Button>
