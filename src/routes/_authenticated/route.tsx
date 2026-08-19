@@ -1,7 +1,7 @@
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useSession } from "@/hooks/useSession";
-import { AppHeader } from "@/components/layout/AppHeader";
+import { AppShell } from "@/components/layout/AppShell";
 
 /** Gate for every signed-in surface. Rendered client-side only. */
 export const Route = createFileRoute("/_authenticated")({
