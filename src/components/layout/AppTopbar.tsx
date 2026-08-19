@@ -45,7 +45,8 @@ export function AppTopbar({ onOpenNav }: { onOpenNav: () => void }) {
 
   function handleSearch(event: React.FormEvent) {
     event.preventDefault();
-    navigate({ to: "/builder", search: { q: query.trim() || undefined, template: undefined } });
+    const q = query.trim();
+    navigate({ to: "/builder", search: q ? { q } : {} });
   }
 
   const initials = (user?.email ?? "?").slice(0, 2).toUpperCase();
