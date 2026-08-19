@@ -81,6 +81,22 @@ export const resumeService = {
     if (error) throw error;
   },
 
+  /** Partial update for the editor (title / template / content in one round-trip). */
+  async patch(
+    id: string,
+    patch: { title?: string; template?: TemplateId; content?: ResumeContent; atsScore?: number },
+  ) {
+    const payload: Record<string, unknown> = {};
+    if (patch.title) payload["title"] = patch.title;
+    if (patch.template) payload["template"] = patch.template;
+    if (patch.content) payload["content"] = patch.content as unknown as Json;
+    if (patch.atsScore !== undefined) payload["ats_score"] = patch.atsScore;
+    if (Object.keys(payload).length === 0) return;
+
+    const { error } = await supabase.from("resumes").update(payload).eq("id", id);
+    if (error) throw error;
+  },
+
   async remove(id: string) {
     const { error } = await supabase.from("resumes").delete().eq("id", id);
     if (error) throw error;
