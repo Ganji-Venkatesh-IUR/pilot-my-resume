@@ -36,8 +36,7 @@ const SAMPLE: ResumeContent = {
     {
       role: "Senior Backend Engineer",
       company: "Northwind Pay",
-      start: "2022",
-      end: "Present",
+      period: "2022 — Present",
       location: "Berlin",
       bullets: [
         "Cut p99 latency 62% by resharding the ledger service.",
@@ -45,10 +44,8 @@ const SAMPLE: ResumeContent = {
       ],
     },
   ],
-  projects: [
-    { name: "ledgerkit", description: "Open-source double-entry ledger library.", link: "" },
-  ],
-  education: [{ school: "TU Munich", degree: "BSc Computer Science", year: "2017" }],
+  projects: [{ name: "ledgerkit", description: "Open-source double-entry ledger library." }],
+  education: [{ school: "TU Munich", degree: "BSc Computer Science", period: "2017" }],
   certifications: ["AWS Solutions Architect"],
 };
 
