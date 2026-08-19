@@ -79,7 +79,7 @@ function BuilderPage() {
         sourceText,
         githubUrl,
         linkedinUrl,
-        template,
+        template: template ?? "atlas",
       });
       await queryClient.invalidateQueries({ queryKey: ["resumes"] });
       navigate({ to: "/resume/$resumeId", params: { resumeId: id } });
