@@ -13,10 +13,12 @@ import { createResume } from "@/lib/create-resume";
 import { TEMPLATES, type TemplateId } from "@/lib/resume-schema";
 
 export const Route = createFileRoute("/_authenticated/builder")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    q: typeof search["q"] === "string" ? (search["q"] as string) : undefined,
-    template:
-      typeof search["template"] === "string" ? (search["template"] as TemplateId) : undefined,
+  // Both params are optional so other pages can link here without search state.
+  validateSearch: (search: Record<string, unknown>): { q?: string; template?: TemplateId } => ({
+    ...(typeof search["q"] === "string" ? { q: search["q"] as string } : {}),
+    ...(typeof search["template"] === "string"
+      ? { template: search["template"] as TemplateId }
+      : {}),
   }),
   head: () => ({
     meta: [
