@@ -20,9 +20,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         </SheetContent>
       </Sheet>
 
-      <div className="lg:pl-64">
+      <div className="flex min-h-screen flex-col lg:pl-64">
         <AppTopbar onOpenNav={() => setNavOpen(true)} />
-        <main className="px-4 py-8 sm:px-6 lg:px-8 print:p-0">{children}</main>
+        <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8 print:p-0">
+          <PageContainer>{children}</PageContainer>
+        </main>
+        <Footer />
       </div>
     </div>
   );
