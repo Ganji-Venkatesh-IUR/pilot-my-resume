@@ -88,8 +88,8 @@ export function QuickActionCard({
   description,
   icon: Icon,
 }: {
-  to: LinkProps["to"];
-  search?: LinkProps["search"];
+  to: NonNullable<LinkProps["to"]>;
+  search?: NonNullable<LinkProps["search"]>;
   label: string;
   description: string;
   icon: Icon;
@@ -97,7 +97,7 @@ export function QuickActionCard({
   return (
     <Link
       to={to}
-      search={search}
+      {...(search === undefined ? {} : { search })}
       className="group flex h-full flex-col gap-2 rounded-xl border border-border bg-card p-5 shadow-soft transition-shadow hover:shadow-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <span className="flex size-9 items-center justify-center rounded-lg bg-accent text-accent-foreground">
@@ -120,7 +120,7 @@ export function EmptyState({
 }: {
   message: string;
   actionLabel?: string;
-  actionTo?: LinkProps["to"];
+  actionTo?: NonNullable<LinkProps["to"]>;
 }) {
   return (
     <div className="rounded-lg border border-dashed border-border p-8 text-center">
