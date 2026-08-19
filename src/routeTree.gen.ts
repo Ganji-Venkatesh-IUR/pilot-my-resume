@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedBuilderRouteImport } from './routes/_authenticated/builder'
 import { Route as AuthenticatedCopilotRouteImport } from './routes/_authenticated/copilot'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedTemplatesRouteImport } from './routes/_authenticated/templates'
 import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated/upload'
 import { Route as AuthenticatedResumeResumeIdRouteImport } from './routes/_authenticated/resume.$resumeId'
@@ -48,6 +49,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedTemplatesRoute = AuthenticatedTemplatesRouteImport.update({
   id: '/templates',
   path: '/templates',
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/builder': typeof AuthenticatedBuilderRoute
   '/copilot': typeof AuthenticatedCopilotRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/templates': typeof AuthenticatedTemplatesRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/resume/$resumeId': typeof AuthenticatedResumeResumeIdRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/builder': typeof AuthenticatedBuilderRoute
   '/copilot': typeof AuthenticatedCopilotRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/templates': typeof AuthenticatedTemplatesRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/resume/$resumeId': typeof AuthenticatedResumeResumeIdRoute
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/_authenticated/builder': typeof AuthenticatedBuilderRoute
   '/_authenticated/copilot': typeof AuthenticatedCopilotRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/templates': typeof AuthenticatedTemplatesRoute
   '/_authenticated/upload': typeof AuthenticatedUploadRoute
   '/_authenticated/resume/$resumeId': typeof AuthenticatedResumeResumeIdRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/builder'
     | '/copilot'
     | '/dashboard'
+    | '/profile'
     | '/templates'
     | '/upload'
     | '/resume/$resumeId'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
     | '/builder'
     | '/copilot'
     | '/dashboard'
+    | '/profile'
     | '/templates'
     | '/upload'
     | '/resume/$resumeId'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '/_authenticated/builder'
     | '/_authenticated/copilot'
     | '/_authenticated/dashboard'
+    | '/_authenticated/profile'
     | '/_authenticated/templates'
     | '/_authenticated/upload'
     | '/_authenticated/resume/$resumeId'
@@ -181,6 +193,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/templates': {
       id: '/_authenticated/templates'
       path: '/templates'
@@ -209,6 +228,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBuilderRoute: typeof AuthenticatedBuilderRoute
   AuthenticatedCopilotRoute: typeof AuthenticatedCopilotRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedTemplatesRoute: typeof AuthenticatedTemplatesRoute
   AuthenticatedUploadRoute: typeof AuthenticatedUploadRoute
   AuthenticatedResumeResumeIdRoute: typeof AuthenticatedResumeResumeIdRoute
@@ -218,6 +238,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBuilderRoute: AuthenticatedBuilderRoute,
   AuthenticatedCopilotRoute: AuthenticatedCopilotRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedTemplatesRoute: AuthenticatedTemplatesRoute,
   AuthenticatedUploadRoute: AuthenticatedUploadRoute,
   AuthenticatedResumeResumeIdRoute: AuthenticatedResumeResumeIdRoute,
