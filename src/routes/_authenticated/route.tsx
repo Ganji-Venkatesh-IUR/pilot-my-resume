@@ -2,6 +2,8 @@ import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useSession } from "@/hooks/useSession";
 import { AppShell } from "@/components/layout/AppShell";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { FullPageLoader } from "@/components/common/LoadingState";
 
 /** Gate for every signed-in surface. Rendered client-side only. */
 export const Route = createFileRoute("/_authenticated")({
@@ -14,20 +16,17 @@ function AuthenticatedLayout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && !session) navigate({ to: "/auth", replace: true });
+    if (!loading && !session) navigate({ to: "/login", replace: true });
   }, [loading, session, navigate]);
 
-  if (loading || !session) {
-    return (
-      <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
-        Loading your workspace…
-      </div>
-    );
-  }
+  if (loading || !session) return <FullPageLoader />;
 
   return (
     <AppShell>
-      <Outlet />
+      {/* A crash inside a page keeps the shell (and navigation) usable. */}
+      <ErrorBoundary>
+        <Outlet />
+      </ErrorBoundary>
     </AppShell>
   );
 }

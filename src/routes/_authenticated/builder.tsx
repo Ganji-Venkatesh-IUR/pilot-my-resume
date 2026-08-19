@@ -8,8 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
-import { createResume } from "@/lib/create-resume";
+import { resumeService } from "@/services/resume.service";
 import { TEMPLATES, type TemplateId } from "@/lib/resume-schema";
 
 export const Route = createFileRoute("/_authenticated/builder")({
@@ -57,14 +56,7 @@ function BuilderPage() {
 
   const { data: resumes, isLoading } = useQuery({
     queryKey: ["resumes"],
-    queryFn: async (): Promise<ResumeRow[]> => {
-      const { data, error } = await supabase
-        .from("resumes")
-        .select("id, title, template, target_role, ats_score, updated_at")
-        .order("updated_at", { ascending: false });
-      if (error) throw error;
-      return data ?? [];
-    },
+    queryFn: (): Promise<ResumeRow[]> => resumeService.list(),
   });
 
   const filtered = (resumes ?? []).filter((r) =>
@@ -75,7 +67,7 @@ function BuilderPage() {
     event.preventDefault();
     setCreating(true);
     try {
-      const id = await createResume({
+      const id = await resumeService.create({
         title,
         targetRole,
         sourceText,
@@ -93,8 +85,9 @@ function BuilderPage() {
   }
 
   async function handleDelete(id: string) {
-    const { error } = await supabase.from("resumes").delete().eq("id", id);
-    if (error) {
+    try {
+      await resumeService.remove(id);
+    } catch {
       toast.error("Could not delete that resume.");
       return;
     }

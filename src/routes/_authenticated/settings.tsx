@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { supabase } from "@/integrations/supabase/client";
+import { authService } from "@/services/auth.service";
 import { TEMPLATES, type TemplateId } from "@/lib/resume-schema";
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -74,8 +74,8 @@ function SettingsPage() {
   async function handleSignOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
-    await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+    await authService.signOut();
+    navigate({ to: "/login", replace: true });
   }
 
   return (

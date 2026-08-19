@@ -10,6 +10,9 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import { Toaster } from "@/components/ui/sonner";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { SessionProvider } from "@/context/SessionContext";
+import { ResumeProvider } from "@/context/ResumeContext";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
@@ -128,8 +131,14 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <SessionProvider>
+        <ResumeProvider>
+          <ErrorBoundary>
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </ErrorBoundary>
+        </ResumeProvider>
+      </SessionProvider>
       <Toaster />
     </QueryClientProvider>
   );

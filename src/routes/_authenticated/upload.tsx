@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { createResume } from "@/lib/create-resume";
+import { resumeService } from "@/services/resume.service";
 
 export const Route = createFileRoute("/_authenticated/upload")({
   head: () => ({
@@ -65,7 +65,7 @@ function UploadCenter() {
     }
     setBusy(true);
     try {
-      const id = await createResume({
+      const id = await resumeService.create({
         title: fileName ? fileName.replace(/\.[^.]+$/, "") : "Imported resume",
         sourceText,
         githubUrl,

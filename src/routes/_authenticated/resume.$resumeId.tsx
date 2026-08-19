@@ -6,8 +6,7 @@ import { ArrowLeft, Download, Loader2, Save, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { supabase } from "@/integrations/supabase/client";
-import type { Json } from "@/integrations/supabase/types";
+import { resumeService } from "@/services/resume.service";
 import { CopilotPanel, type CopilotMessage } from "@/components/resume/CopilotPanel";
 import { ResumePreview } from "@/components/resume/ResumePreview";
 import { copilotEdit, generateResume } from "@/lib/careerpilot.functions";
@@ -51,16 +50,7 @@ function ResumeBuilder() {
 
   const { data: row, isLoading } = useQuery({
     queryKey: ["resume", resumeId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("resumes")
-        .select("*")
-        .eq("id", resumeId)
-        .maybeSingle();
-      if (error) throw error;
-      if (!data) throw new Error("Resume not found.");
-      return data;
-    },
+    queryFn: () => resumeService.get(resumeId),
   });
 
   // Hydrate local editor state once the row arrives.
@@ -73,21 +63,13 @@ function ResumeBuilder() {
 
   const hasContent = Boolean(resume && (resume.name || resume.experience.length || resume.summary));
 
-  async function persist(next: Partial<{ content: ResumeContent; template: string; title: string }>) {
-    const payload: {
-      content?: Json;
-      ats_score?: number;
-      template?: string;
-      title?: string;
-    } = {};
-    if (next.template) payload.template = next.template;
-    if (next.title) payload.title = next.title;
-    if (next.content) {
-      payload.content = next.content as unknown as Json;
-      payload.ats_score = estimateAtsScore(next.content);
-    }
-    const { error } = await supabase.from("resumes").update(payload).eq("id", resumeId);
-    if (error) throw error;
+  async function persist(
+    next: Partial<{ content: ResumeContent; template: TemplateId; title: string }>,
+  ) {
+    await resumeService.patch(resumeId, {
+      ...next,
+      ...(next.content ? { atsScore: estimateAtsScore(next.content) } : {}),
+    });
   }
 
   async function handleGenerate() {

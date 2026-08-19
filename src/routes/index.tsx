@@ -65,7 +65,7 @@ function Landing() {
           <span className="font-display text-lg font-semibold tracking-tight">CareerPilot AI</span>
         </div>
         <Button asChild size="sm">
-          <Link to="/auth">Get started</Link>
+          <Link to="/login">Get started</Link>
         </Button>
       </header>
 
@@ -85,10 +85,10 @@ function Landing() {
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg">
-                <Link to="/auth">Build my resume</Link>
+                <Link to="/login">Build my resume</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link to="/auth">Sign in</Link>
+                <Link to="/login">Sign in</Link>
               </Button>
             </div>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
@@ -132,7 +132,7 @@ function Landing() {
               Create an account and generate your first ATS-optimised resume in under two minutes.
             </p>
             <Button asChild size="lg" className="mt-7">
-              <Link to="/auth">Get started free</Link>
+              <Link to="/login">Get started free</Link>
             </Button>
           </div>
         </section>
