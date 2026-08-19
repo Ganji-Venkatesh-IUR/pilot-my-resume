@@ -15,7 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ACCEPT_ATTR, SUPPORTED_TYPES, type UploadRecord } from "@/services/upload.service";
-import { formatRelativeTime } from "@/utils/format";
+import { formatRelative } from "@/utils/format";
 
 /** Item shown in the in-flight upload queue. */
 export interface QueueItem {
@@ -209,7 +209,7 @@ export function RecentUploads({
                 {item.kind === "file"
                   ? `${item.file_type || "file"} · ${formatBytes(item.file_size ?? 0)}`
                   : (item.source_url ?? "link")}{" "}
-                · {formatRelativeTime(item.created_at)}
+                · {formatRelative(item.created_at)}
               </p>
             </div>
             <Badge
