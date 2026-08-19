@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { resumeService } from "@/services/resume.service";
 
 export const Route = createFileRoute("/_authenticated/copilot")({
   head: () => ({
@@ -31,12 +31,7 @@ function CopilotHub() {
   const { data: resumes, isLoading } = useQuery({
     queryKey: ["resumes"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("resumes")
-        .select("id, title, target_role, ats_score, updated_at")
-        .order("updated_at", { ascending: false });
-      if (error) throw error;
-      return data ?? [];
+      return resumeService.list();
     },
   });
 

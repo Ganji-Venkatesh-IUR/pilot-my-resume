@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { PageHeader } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { resumeService } from "@/services/resume.service";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -68,12 +68,7 @@ function Dashboard() {
   const { data: resumes, isLoading } = useQuery({
     queryKey: ["resumes"],
     queryFn: async (): Promise<ResumeRow[]> => {
-      const { data, error } = await supabase
-        .from("resumes")
-        .select("id, title, template, target_role, ats_score, updated_at")
-        .order("updated_at", { ascending: false });
-      if (error) throw error;
-      return data ?? [];
+      return resumeService.list();
     },
   });
 

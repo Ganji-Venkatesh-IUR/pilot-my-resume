@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { supabase } from "@/integrations/supabase/client";
+import { profileService } from "@/services/profile.service";
 import { useSession } from "@/hooks/useSession";
 
 export const Route = createFileRoute("/_authenticated/profile")({
@@ -32,12 +32,7 @@ function ProfilePage() {
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, full_name, email, created_at")
-        .maybeSingle();
-      if (error) throw error;
-      return data;
+      return profileService.getCurrent();
     },
   });
 
@@ -49,15 +44,14 @@ function ProfilePage() {
     event.preventDefault();
     if (!user) return;
     setSaving(true);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ full_name: fullName.trim() || null })
-      .eq("id", user.id);
-    setSaving(false);
-    if (error) {
+    try {
+      await profileService.updateName(user.id, fullName);
+    } catch {
+      setSaving(false);
       toast.error("Could not save your profile.");
       return;
     }
+    setSaving(false);
     toast.success("Profile updated");
     queryClient.invalidateQueries({ queryKey: ["profile"] });
   }
