@@ -86,11 +86,16 @@ export const resumeService = {
     id: string,
     patch: { title?: string; template?: TemplateId; content?: ResumeContent; atsScore?: number },
   ) {
-    const payload: Record<string, unknown> = {};
-    if (patch.title) payload["title"] = patch.title;
-    if (patch.template) payload["template"] = patch.template;
-    if (patch.content) payload["content"] = patch.content as unknown as Json;
-    if (patch.atsScore !== undefined) payload["ats_score"] = patch.atsScore;
+    const payload: {
+      title?: string;
+      template?: string;
+      content?: Json;
+      ats_score?: number;
+    } = {};
+    if (patch.title) payload.title = patch.title;
+    if (patch.template) payload.template = patch.template;
+    if (patch.content) payload.content = patch.content as unknown as Json;
+    if (patch.atsScore !== undefined) payload.ats_score = patch.atsScore;
     if (Object.keys(payload).length === 0) return;
 
     const { error } = await supabase.from("resumes").update(payload).eq("id", id);
