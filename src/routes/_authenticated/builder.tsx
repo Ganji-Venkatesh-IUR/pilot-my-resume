@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import { createResume } from "@/lib/create-resume";
+import { resumeService } from "@/services/resume.service";
 import { TEMPLATES, type TemplateId } from "@/lib/resume-schema";
 
 export const Route = createFileRoute("/_authenticated/builder")({
@@ -75,7 +75,7 @@ function BuilderPage() {
     event.preventDefault();
     setCreating(true);
     try {
-      const id = await createResume({
+      const id = await resumeService.create({
         title,
         targetRole,
         sourceText,
