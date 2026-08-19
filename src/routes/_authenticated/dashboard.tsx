@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { emptyResume } from "@/lib/resume-schema";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -85,7 +86,7 @@ function Dashboard() {
           source_text: sourceText.trim() || null,
           github_url: githubUrl.trim() || null,
           linkedin_url: linkedinUrl.trim() || null,
-          content: emptyResume as unknown as Record<string, unknown>,
+          content: emptyResume as unknown as Json,
         })
         .select("id")
         .single();

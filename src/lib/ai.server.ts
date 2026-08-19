@@ -70,9 +70,9 @@ function parseResume(content: string): ResumeContent {
 /** Build a full ATS-optimised resume from raw source material. */
 export async function buildResume(input: {
   sourceText: string;
-  githubUrl?: string;
-  linkedinUrl?: string;
-  targetRole?: string;
+  githubUrl?: string | undefined;
+  linkedinUrl?: string | undefined;
+  targetRole?: string | undefined;
 }): Promise<ResumeContent> {
   const context = [
     input.targetRole ? `Target role: ${input.targetRole}` : "",
@@ -97,7 +97,7 @@ export async function buildResume(input: {
 export async function reviseResume(input: {
   resume: ResumeContent;
   instruction: string;
-  targetRole?: string;
+  targetRole?: string | undefined;
 }): Promise<{ resume: ResumeContent; note: string }> {
   const content = await callGateway([
     {

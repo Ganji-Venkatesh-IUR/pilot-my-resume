@@ -74,10 +74,17 @@ function ResumeBuilder() {
   const hasContent = Boolean(resume && (resume.name || resume.experience.length || resume.summary));
 
   async function persist(next: Partial<{ content: ResumeContent; template: string; title: string }>) {
-    const payload: Record<string, unknown> = { ...next };
+    const payload: {
+      content?: Json;
+      ats_score?: number;
+      template?: string;
+      title?: string;
+    } = {};
+    if (next.template) payload.template = next.template;
+    if (next.title) payload.title = next.title;
     if (next.content) {
-      payload["content"] = next.content as unknown as Json;
-      payload["ats_score"] = estimateAtsScore(next.content);
+      payload.content = next.content as unknown as Json;
+      payload.ats_score = estimateAtsScore(next.content);
     }
     const { error } = await supabase.from("resumes").update(payload).eq("id", resumeId);
     if (error) throw error;

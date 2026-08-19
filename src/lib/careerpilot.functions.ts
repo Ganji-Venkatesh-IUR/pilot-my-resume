@@ -11,9 +11,9 @@ export const generateResume = createServerFn({ method: "POST" })
   .inputValidator(
     (input: {
       sourceText: string;
-      githubUrl?: string;
-      linkedinUrl?: string;
-      targetRole?: string;
+      githubUrl?: string | undefined;
+      linkedinUrl?: string | undefined;
+      targetRole?: string | undefined;
     }) => {
       if (!input?.sourceText?.trim() && !input?.githubUrl && !input?.linkedinUrl) {
         throw new Error("Add resume text or a GitHub/LinkedIn link first.");
@@ -29,7 +29,11 @@ export const generateResume = createServerFn({ method: "POST" })
 export const copilotEdit = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (input: { resume: ResumeContent; instruction: string; targetRole?: string }) => {
+    (input: {
+      resume: ResumeContent;
+      instruction: string;
+      targetRole?: string | undefined;
+    }) => {
       if (!input?.instruction?.trim()) throw new Error("Tell the copilot what to change.");
       return input;
     },
