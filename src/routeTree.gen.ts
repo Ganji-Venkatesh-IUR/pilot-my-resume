@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedBuilderRouteImport } from './routes/_authenticated/builder'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated/upload'
 import { Route as AuthenticatedResumeResumeIdRouteImport } from './routes/_authenticated/resume.$resumeId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -40,6 +41,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedUploadRoute = AuthenticatedUploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedResumeResumeIdRoute =
   AuthenticatedResumeResumeIdRouteImport.update({
     id: '/resume/$resumeId',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/builder': typeof AuthenticatedBuilderRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/upload': typeof AuthenticatedUploadRoute
   '/resume/$resumeId': typeof AuthenticatedResumeResumeIdRoute
 }
 export interface FileRoutesByTo {
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/builder': typeof AuthenticatedBuilderRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/upload': typeof AuthenticatedUploadRoute
   '/resume/$resumeId': typeof AuthenticatedResumeResumeIdRoute
 }
 export interface FileRoutesById {
@@ -68,13 +76,16 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/builder': typeof AuthenticatedBuilderRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/upload': typeof AuthenticatedUploadRoute
   '/_authenticated/resume/$resumeId': typeof AuthenticatedResumeResumeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/builder' | '/dashboard' | '/resume/$resumeId'
+  fullPaths:
+    '/' | '/auth' | '/builder' | '/dashboard' | '/upload' | '/resume/$resumeId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/builder' | '/dashboard' | '/resume/$resumeId'
+  to:
+    '/' | '/auth' | '/builder' | '/dashboard' | '/upload' | '/resume/$resumeId'
   id:
     | '__root__'
     | '/'
@@ -82,6 +93,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/builder'
     | '/_authenticated/dashboard'
+    | '/_authenticated/upload'
     | '/_authenticated/resume/$resumeId'
   fileRoutesById: FileRoutesById
 }
@@ -128,6 +140,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/upload': {
+      id: '/_authenticated/upload'
+      path: '/upload'
+      fullPath: '/upload'
+      preLoaderRoute: typeof AuthenticatedUploadRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/resume/$resumeId': {
       id: '/_authenticated/resume/$resumeId'
       path: '/resume/$resumeId'
@@ -141,12 +160,14 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedBuilderRoute: typeof AuthenticatedBuilderRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedUploadRoute: typeof AuthenticatedUploadRoute
   AuthenticatedResumeResumeIdRoute: typeof AuthenticatedResumeResumeIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBuilderRoute: AuthenticatedBuilderRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedUploadRoute: AuthenticatedUploadRoute,
   AuthenticatedResumeResumeIdRoute: AuthenticatedResumeResumeIdRoute,
 }
 
