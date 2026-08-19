@@ -26,9 +26,8 @@ function AuthenticatedLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <AppHeader />
+    <AppShell>
       <Outlet />
-    </div>
+    </AppShell>
   );
 }
