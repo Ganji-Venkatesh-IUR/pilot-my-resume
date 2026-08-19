@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
 import { resumeService } from "@/services/resume.service";
 import { TEMPLATES, type TemplateId } from "@/lib/resume-schema";
 
@@ -57,14 +56,7 @@ function BuilderPage() {
 
   const { data: resumes, isLoading } = useQuery({
     queryKey: ["resumes"],
-    queryFn: async (): Promise<ResumeRow[]> => {
-      const { data, error } = await supabase
-        .from("resumes")
-        .select("id, title, template, target_role, ats_score, updated_at")
-        .order("updated_at", { ascending: false });
-      if (error) throw error;
-      return data ?? [];
-    },
+    queryFn: (): Promise<ResumeRow[]> => resumeService.list(),
   });
 
   const filtered = (resumes ?? []).filter((r) =>

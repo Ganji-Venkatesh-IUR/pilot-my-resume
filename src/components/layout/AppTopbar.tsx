@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authService } from "@/services/auth.service";
+import { resumeService } from "@/services/resume.service";
 import { useSession } from "@/hooks/useSession";
 
 /** Top bar: logo (mobile), global search, notifications and the profile menu. */
@@ -26,13 +27,8 @@ export function AppTopbar({ onOpenNav }: { onOpenNav: () => void }) {
   const { data: recent } = useQuery({
     queryKey: ["recent-activity"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("resumes")
-        .select("id, title, updated_at")
-        .order("updated_at", { ascending: false })
-        .limit(5);
-      if (error) throw error;
-      return data ?? [];
+      const rows = await resumeService.list();
+      return rows.slice(0, 5);
     },
   });
 
