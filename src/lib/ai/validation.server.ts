@@ -20,7 +20,7 @@ export function parseJson(raw: string, context: string): unknown {
   }
 }
 
-function check<T>(schema: z.ZodType<T>, value: unknown, context: string): T {
+function check<S extends z.ZodTypeAny>(schema: S, value: unknown, context: string): z.infer<S> {
   const result = schema.safeParse(value);
   if (!result.success) {
     console.error(
