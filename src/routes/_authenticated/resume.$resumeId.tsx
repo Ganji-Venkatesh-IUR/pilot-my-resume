@@ -326,9 +326,12 @@ function ResumeEditor() {
           <Button variant="outline" size="sm" onClick={() => void save(resume)} disabled={saving}>
             <Save className="size-4" /> Save
           </Button>
-          <Button variant="outline" size="sm" onClick={() => window.print()} disabled={!hasContent}>
-            <Download className="size-4" /> Export PDF
-          </Button>
+          <ExportMenu
+            filename={title || "resume"}
+            margin={resume.style.margin}
+            disabled={!hasContent}
+          />
+
           <Button size="sm" onClick={handleGenerate} disabled={generating}>
             {generating ? (
               <Loader2 className="size-4 animate-spin" />
