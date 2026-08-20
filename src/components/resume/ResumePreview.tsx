@@ -366,15 +366,16 @@ export function ResumePreview({
   return (
     <div
       id="resume-sheet"
-      className={`mx-auto w-full max-w-[820px] rounded-xl border border-border bg-card p-8 text-card-foreground shadow-soft sm:p-10 ${base} ${font}`}
+      data-template={t.id}
+      style={sheetStyle}
+      className={`mx-auto w-full max-w-[820px] rounded-xl border border-border bg-card text-card-foreground shadow-soft ${font}`}
     >
-      {isSignal && <div className="mb-5 h-1.5 w-24 rounded-full bg-primary" />}
+      {t.accentBar && <div className="mb-5 h-1.5 w-24 rounded-full bg-primary" />}
 
-      <header className={isEditorial ? "text-center" : ""}>
+      <header className={t.headerAlign === "center" ? "text-center" : ""}>
         <h2
-          className={`font-semibold ${isCompact ? "text-xl" : "text-[26px]"} ${
-            isEditorial ? "font-serif tracking-normal" : ""
-          }`}
+          className={`font-semibold ${headingFont} ${t.font === "serif" ? "font-serif tracking-normal" : ""}`}
+          style={{ fontSize: `${fontSize * 2}px`, lineHeight: 1.2 }}
         >
           <Editable
             label="Full name"
@@ -384,7 +385,7 @@ export function ResumePreview({
             onCommit={(v) => patch({ name: v })}
           />
         </h2>
-        <p className={isSignal ? "text-primary" : "text-muted-foreground"}>
+        <p className={t.accentHeadings ? "text-primary" : "text-muted-foreground"}>
           <Editable
             label="Headline"
             editable={canEdit}
@@ -395,6 +396,7 @@ export function ResumePreview({
         </p>
         {contact.length > 0 && <p className="mt-1 text-muted-foreground">{contact.join("  •  ")}</p>}
       </header>
+
 
       {isSidebar && visible.includes("skills") ? (
         <div className="mt-4 grid gap-6 sm:grid-cols-[1fr_200px]">
