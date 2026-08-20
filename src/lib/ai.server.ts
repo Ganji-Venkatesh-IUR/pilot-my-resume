@@ -1,8 +1,12 @@
 /**
  * Server-only helpers that talk to the Lovable AI Gateway.
  * Never imported by browser code (enforced by the `.server` filename).
+ *
+ * The generation engine is intentionally simple: normalize source material →
+ * fill a prompt template → parse a strict JSON resume → normalize again.
  */
 import { normalizeResume, type ResumeContent } from "./resume-schema";
+import { buildCorpus, type NormalizedSource } from "./resume-source";
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const MODEL = "google/gemini-3.5-flash";
@@ -12,6 +16,7 @@ Rules:
 - Output must be strictly ATS friendly: no tables, no columns, no graphics, plain readable text.
 - Bullets start with a strong action verb, are one line, and quantify impact when the source allows.
 - Never invent employers, degrees, dates or metrics that are not supported by the source material.
+- Leave a section as an empty array when the source has nothing for it. Do not pad with filler.
 - Mirror relevant keywords from the target role naturally.
 - Return ONLY a JSON object matching the requested shape.`;
 
@@ -67,30 +72,53 @@ function parseResume(content: string): ResumeContent {
   }
 }
 
-/** Build a full ATS-optimised resume from raw source material. */
-export async function buildResume(input: {
-  sourceText: string;
-  githubUrl?: string | undefined;
-  linkedinUrl?: string | undefined;
-  targetRole?: string | undefined;
-}): Promise<ResumeContent> {
-  const context = [
-    input.targetRole ? `Target role: ${input.targetRole}` : "",
-    input.githubUrl ? `GitHub: ${input.githubUrl}` : "",
-    input.linkedinUrl ? `LinkedIn: ${input.linkedinUrl}` : "",
-    input.sourceText ? `Source material:\n${input.sourceText.slice(0, 20000)}` : "",
-  ]
-    .filter(Boolean)
-    .join("\n\n");
+/**
+ * Deterministic scaffold used when there is no material to summarise.
+ * Keeps the preview renderable instead of failing the whole request.
+ */
+export function baselineResume(source: NormalizedSource): ResumeContent {
+  return normalizeResume({
+    name: source.profile.fullName ?? "",
+    headline: source.targetRole || source.profile.headline || "",
+    email: source.profile.email ?? "",
+    location: source.profile.location ?? "",
+    links: source.links.map((l) => l.url),
+  });
+}
+
+/** Build a full ATS-optimised resume from normalized source material. */
+export async function generateFromSource(
+  source: NormalizedSource,
+  options?: { previous?: ResumeContent | undefined; feedback?: string | undefined },
+): Promise<ResumeContent> {
+  if (source.isEmpty) return baselineResume(source);
+
+  const corpus = buildCorpus(source);
+  const userParts = [
+    "Create the strongest ATS-friendly resume you can from the material below.",
+    "Sections to fill when supported by the source: summary, skills, experience, projects, education, certifications.",
+    options?.previous
+      ? `A previous version exists. Improve it, keeping accurate details:\n${JSON.stringify(options.previous)}`
+      : "",
+    options?.feedback ? `Regeneration feedback from the user: ${options.feedback}` : "",
+    corpus,
+  ].filter(Boolean);
 
   const content = await callGateway([
     { role: "system", content: `${RESUME_RULES}\nJSON shape:\n${SHAPE}` },
-    {
-      role: "user",
-      content: `Create the strongest ATS-friendly resume you can from the material below.\n\n${context}`,
-    },
+    { role: "user", content: userParts.join("\n\n") },
   ]);
-  return parseResume(content);
+
+  const generated = parseResume(content);
+
+  // Backfill contact details the model may have dropped.
+  return normalizeResume({
+    ...generated,
+    name: generated.name || (source.profile.fullName ?? ""),
+    email: generated.email || (source.profile.email ?? ""),
+    location: generated.location || (source.profile.location ?? ""),
+    links: generated.links.length ? generated.links : source.links.map((l) => l.url),
+  });
 }
 
 /** Apply a natural-language copilot instruction to an existing resume. */
