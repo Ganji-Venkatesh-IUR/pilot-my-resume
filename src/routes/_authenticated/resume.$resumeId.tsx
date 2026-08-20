@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { resumeService } from "@/services/resume.service";
 import { CopilotPanel, type CopilotMessage } from "@/components/resume/CopilotPanel";
 import { ResumePreview } from "@/components/resume/ResumePreview";
-import { copilotEdit, generateResume } from "@/lib/careerpilot.functions";
+import { copilotEdit, generateResume, regenerateResume } from "@/lib/careerpilot.functions";
 import {
   TEMPLATES,
   estimateAtsScore,
@@ -38,6 +38,7 @@ function ResumeBuilder() {
   const { resumeId } = Route.useParams();
   const navigate = useNavigate();
   const runGenerate = useServerFn(generateResume);
+  const runRegenerate = useServerFn(regenerateResume);
   const runCopilot = useServerFn(copilotEdit);
 
   const [resume, setResume] = useState<ResumeContent | null>(null);
@@ -72,22 +73,20 @@ function ResumeBuilder() {
     });
   }
 
+  /** Runs generate on first pass, regenerate (previous version as context) after. */
   async function handleGenerate() {
     if (!row) return;
     setGenerating(true);
     try {
-      const generated = await runGenerate({
-        data: {
-          sourceText: row.source_text ?? "",
-          githubUrl: row.github_url ?? undefined,
-          linkedinUrl: row.linkedin_url ?? undefined,
-          targetRole: row.target_role ?? undefined,
-        },
-      });
-      const next = normalizeResume(generated);
-      setResume(next);
-      await persist({ content: next });
-      toast.success("ATS resume generated");
+      const result = hasContent
+        ? await runRegenerate({ data: { resumeId } })
+        : await runGenerate({ data: { resumeId } });
+      setResume(normalizeResume(result.resume));
+      if (result.scaffold) {
+        toast.warning("No source material yet — add uploads or links, then regenerate.");
+      } else {
+        toast.success(`ATS resume ready · score ${result.atsScore}`);
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Generation failed.");
     } finally {
