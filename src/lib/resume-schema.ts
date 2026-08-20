@@ -154,6 +154,7 @@ export function normalizeResume(value: unknown): ResumeContent {
       : [],
     certifications: strArray(raw.certifications),
     layout: normalizeLayout((raw as { layout?: unknown }).layout),
+    style: normalizeStyle((raw as { style?: unknown }).style),
   };
 }
 
@@ -172,6 +173,24 @@ function normalizeLayout(value: unknown): ResumeLayout {
     hidden: Array.isArray(raw.hidden) ? raw.hidden.filter(isId) : [],
   };
 }
+
+/** Clamp helper: keeps typography inside readable, ATS-safe bounds. */
+export function clampStyleValue(key: keyof ResumeStyle, value: number): number {
+  const { min, max } = STYLE_LIMITS[key];
+  if (!Number.isFinite(value)) return defaultStyle[key];
+  return Math.min(max, Math.max(min, value));
+}
+
+export function normalizeStyle(value: unknown): ResumeStyle {
+  const raw = (value ?? {}) as Partial<ResumeStyle>;
+  return {
+    fontScale: clampStyleValue("fontScale", Number(raw.fontScale ?? defaultStyle.fontScale)),
+    lineHeight: clampStyleValue("lineHeight", Number(raw.lineHeight ?? defaultStyle.lineHeight)),
+    sectionGap: clampStyleValue("sectionGap", Number(raw.sectionGap ?? defaultStyle.sectionGap)),
+    margin: clampStyleValue("margin", Number(raw.margin ?? defaultStyle.margin)),
+  };
+}
+
 
 /** Rough ATS heuristic used for the dashboard score chip. */
 export function estimateAtsScore(resume: ResumeContent): number {
