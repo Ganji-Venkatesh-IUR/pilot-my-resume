@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      job_targets: {
+        Row: {
+          analysis: Json | null
+          base_resume_id: string | null
+          company: string | null
+          created_at: string
+          id: string
+          jd_text: string
+          match: Json | null
+          match_score: number | null
+          status: string
+          tailored_resume_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analysis?: Json | null
+          base_resume_id?: string | null
+          company?: string | null
+          created_at?: string
+          id?: string
+          jd_text: string
+          match?: Json | null
+          match_score?: number | null
+          status?: string
+          tailored_resume_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analysis?: Json | null
+          base_resume_id?: string | null
+          company?: string | null
+          created_at?: string
+          id?: string
+          jd_text?: string
+          match?: Json | null
+          match_score?: number | null
+          status?: string
+          tailored_resume_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_targets_base_resume_id_fkey"
+            columns: ["base_resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_targets_tailored_resume_id_fkey"
+            columns: ["tailored_resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
