@@ -5,6 +5,7 @@ import {
   Sparkles,
   LayoutTemplate,
   Target,
+  BookUser,
   User,
   Settings,
 } from "lucide-react";
@@ -13,6 +14,7 @@ import {
 export const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/upload", label: "Upload center", icon: UploadCloud },
+  { to: "/career", label: "Career profile", icon: BookUser },
   { to: "/builder", label: "Resume builder", icon: FileText },
   { to: "/tailor", label: "Job tailoring", icon: Target },
   { to: "/copilot", label: "AI copilot", icon: Sparkles },
