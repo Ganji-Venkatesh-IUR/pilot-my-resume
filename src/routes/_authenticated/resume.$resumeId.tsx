@@ -9,6 +9,9 @@ import { Input } from "@/components/ui/input";
 import { CopilotPanel, type CopilotMessage } from "@/components/resume/CopilotPanel";
 import { ResumePreview } from "@/components/resume/ResumePreview";
 import { SectionSidebar } from "@/components/resume/SectionSidebar";
+import { StyleControls } from "@/components/resume/StyleControls";
+import { ExportMenu } from "@/components/resume/ExportMenu";
+
 import {
   changeTemplate,
   copilotRewrite,
