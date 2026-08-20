@@ -2,13 +2,16 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowLeft, Check, Download, Loader2, Redo2, Save, Sparkles, Undo2 } from "lucide-react";
+import { ArrowLeft, Check, Loader2, Redo2, Save, Sparkles, Undo2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CopilotPanel, type CopilotMessage } from "@/components/resume/CopilotPanel";
 import { ResumePreview } from "@/components/resume/ResumePreview";
 import { SectionSidebar } from "@/components/resume/SectionSidebar";
+import { StyleControls } from "@/components/resume/StyleControls";
+import { ExportMenu } from "@/components/resume/ExportMenu";
+
 import {
   changeTemplate,
   copilotRewrite,
@@ -326,9 +329,12 @@ function ResumeEditor() {
           <Button variant="outline" size="sm" onClick={() => void save(resume)} disabled={saving}>
             <Save className="size-4" /> Save
           </Button>
-          <Button variant="outline" size="sm" onClick={() => window.print()} disabled={!hasContent}>
-            <Download className="size-4" /> Export PDF
-          </Button>
+          <ExportMenu
+            filename={title || "resume"}
+            margin={resume.style.margin}
+            disabled={!hasContent}
+          />
+
           <Button size="sm" onClick={handleGenerate} disabled={generating}>
             {generating ? (
               <Loader2 className="size-4 animate-spin" />
@@ -361,9 +367,14 @@ function ResumeEditor() {
 
       {/* Three panels: sections · live preview · copilot */}
       <div className="grid gap-5 lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[220px_minmax(0,1fr)_360px]">
-        <aside className="lg:sticky lg:top-24 lg:self-start print:hidden">
+        <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start print:hidden">
           <SectionSidebar layout={resume.layout} counts={counts} onChange={handleLayout} />
+          <StyleControls
+            style={resume.style}
+            onChange={(style) => commit({ ...resume, style })}
+          />
         </aside>
+
 
         <div>
           {hasContent ? (

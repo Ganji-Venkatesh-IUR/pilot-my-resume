@@ -1,5 +1,7 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { getTemplate, normalizeStyle } from "@/lib/resume-schema";
 import type { ResumeContent, SectionId, TemplateId } from "@/lib/resume-schema";
+
 
 /** Inline-editable text node. Commits on blur so typing never fights React state. */
 function Editable({
@@ -45,8 +47,9 @@ function Editable({
 }
 
 /**
- * Renders a resume into one of five ATS-safe templates.
+ * Renders a resume using a template descriptor from the template registry.
  * Every template is plain text flow — no tables or images — so parsers read it.
+ * Typography/spacing come from `resume.style` (already clamped to safe ranges).
  * When `editable` is set, text nodes become inline-editable and commit on blur.
  */
 export function ResumePreview({
@@ -60,13 +63,22 @@ export function ResumePreview({
   editable?: boolean;
   onChange?: (next: ResumeContent) => void;
 }) {
-  const isEditorial = template === "editorial";
-  const isCompact = template === "compact";
-  const isSidebar = template === "meridian";
-  const isSignal = template === "signal";
+  const t = getTemplate(template);
+  const style = normalizeStyle(resume.style);
 
-  const base = isCompact ? "text-[11px] leading-snug" : "text-[12.5px] leading-relaxed";
-  const font = isEditorial ? "font-serif" : "font-sans";
+  const isSidebar = t.sidebar;
+  const font =
+    t.font === "serif" ? "font-serif" : t.font === "mono-heading" ? "font-sans" : "font-sans";
+  const headingFont = t.font === "mono-heading" ? "font-mono" : "";
+
+  const fontSize = t.baseSize * style.fontScale;
+  const sheetStyle: CSSProperties = {
+    fontSize: `${fontSize}px`,
+    lineHeight: t.leading * style.lineHeight,
+    padding: `${style.margin * 1.4}mm ${style.margin * 1.6}mm`,
+    // Drives section rhythm below.
+    ["--section-gap" as string]: `${1.1 * style.sectionGap}rem`,
+  };
 
   const patch = (next: Partial<ResumeContent>) => onChange?.({ ...resume, ...next });
   const canEdit = editable && Boolean(onChange);
@@ -74,16 +86,21 @@ export function ResumePreview({
   const heading = (label: string) => (
     <h3
       className={[
-        "mt-4 mb-1.5 font-semibold uppercase tracking-[0.14em]",
-        isCompact ? "text-[10px]" : "text-[11px]",
-        isSignal ? "text-primary" : "text-foreground",
-        isEditorial ? "border-b border-border pb-1 tracking-[0.2em]" : "",
-        !isEditorial && !isSignal ? "border-b border-border pb-1" : "",
+        "mb-1.5 font-semibold uppercase",
+        headingFont,
+        t.accentHeadings ? "text-primary" : "text-foreground",
+        t.headingRule ? "border-b border-border pb-1" : "",
       ].join(" ")}
+      style={{
+        fontSize: `${fontSize * 0.86}px`,
+        letterSpacing: t.headingTracking,
+        marginTop: "var(--section-gap)",
+      }}
     >
       {label}
     </h3>
   );
+
 
   const contact = [resume.email, resume.phone, resume.location, ...resume.links].filter(Boolean);
 
@@ -351,15 +368,16 @@ export function ResumePreview({
   return (
     <div
       id="resume-sheet"
-      className={`mx-auto w-full max-w-[820px] rounded-xl border border-border bg-card p-8 text-card-foreground shadow-soft sm:p-10 ${base} ${font}`}
+      data-template={t.id}
+      style={sheetStyle}
+      className={`mx-auto w-full max-w-[820px] rounded-xl border border-border bg-card text-card-foreground shadow-soft ${font}`}
     >
-      {isSignal && <div className="mb-5 h-1.5 w-24 rounded-full bg-primary" />}
+      {t.accentBar && <div className="mb-5 h-1.5 w-24 rounded-full bg-primary" />}
 
-      <header className={isEditorial ? "text-center" : ""}>
+      <header className={t.headerAlign === "center" ? "text-center" : ""}>
         <h2
-          className={`font-semibold ${isCompact ? "text-xl" : "text-[26px]"} ${
-            isEditorial ? "font-serif tracking-normal" : ""
-          }`}
+          className={`font-semibold ${headingFont} ${t.font === "serif" ? "font-serif tracking-normal" : ""}`}
+          style={{ fontSize: `${fontSize * 2}px`, lineHeight: 1.2 }}
         >
           <Editable
             label="Full name"
@@ -369,7 +387,7 @@ export function ResumePreview({
             onCommit={(v) => patch({ name: v })}
           />
         </h2>
-        <p className={isSignal ? "text-primary" : "text-muted-foreground"}>
+        <p className={t.accentHeadings ? "text-primary" : "text-muted-foreground"}>
           <Editable
             label="Headline"
             editable={canEdit}
@@ -380,6 +398,7 @@ export function ResumePreview({
         </p>
         {contact.length > 0 && <p className="mt-1 text-muted-foreground">{contact.join("  •  ")}</p>}
       </header>
+
 
       {isSidebar && visible.includes("skills") ? (
         <div className="mt-4 grid gap-6 sm:grid-cols-[1fr_200px]">

@@ -46,6 +46,35 @@ export interface ResumeLayout {
 
 export const defaultLayout: ResumeLayout = { order: [...SECTION_IDS], hidden: [] };
 
+/**
+ * User typography / spacing overrides, clamped to ATS-safe ranges so a resume
+ * can never be shrunk into something a parser (or recruiter) can't read.
+ */
+export interface ResumeStyle {
+  /** Multiplier on the template base font size. */
+  fontScale: number;
+  /** Multiplier on the template line-height. */
+  lineHeight: number;
+  /** Multiplier on vertical section spacing. */
+  sectionGap: number;
+  /** Page margin in millimetres, used for screen padding and @page. */
+  margin: number;
+}
+
+export const STYLE_LIMITS = {
+  fontScale: { min: 0.9, max: 1.15, step: 0.01 },
+  lineHeight: { min: 0.9, max: 1.25, step: 0.01 },
+  sectionGap: { min: 0.75, max: 1.5, step: 0.05 },
+  margin: { min: 10, max: 20, step: 1 },
+} as const;
+
+export const defaultStyle: ResumeStyle = {
+  fontScale: 1,
+  lineHeight: 1,
+  sectionGap: 1,
+  margin: 12,
+};
+
 export interface ResumeContent {
   name: string;
   headline: string;
@@ -60,17 +89,12 @@ export interface ResumeContent {
   education: ResumeEducation[];
   certifications: string[];
   layout: ResumeLayout;
+  style: ResumeStyle;
 }
 
-export const TEMPLATES = [
-  { id: "atlas", name: "Atlas", blurb: "Single column, ATS-safe classic" },
-  { id: "meridian", name: "Meridian", blurb: "Sidebar with skills rail" },
-  { id: "compact", name: "Compact", blurb: "Dense, one-page engineering" },
-  { id: "editorial", name: "Editorial", blurb: "Serif headings, airy spacing" },
-  { id: "signal", name: "Signal", blurb: "Accent bar, modern product roles" },
-] as const;
+export { TEMPLATES, DEFAULT_TEMPLATE, getTemplate } from "./resume-templates";
+export type { TemplateId, TemplateDescriptor } from "./resume-templates";
 
-export type TemplateId = (typeof TEMPLATES)[number]["id"];
 
 /** Empty resume used before AI generation and as a merge fallback. */
 export const emptyResume: ResumeContent = {
@@ -87,7 +111,9 @@ export const emptyResume: ResumeContent = {
   education: [],
   certifications: [],
   layout: defaultLayout,
+  style: defaultStyle,
 };
+
 
 /** Defensive normaliser — AI output and DB JSON are never fully trusted. */
 export function normalizeResume(value: unknown): ResumeContent {
@@ -130,6 +156,7 @@ export function normalizeResume(value: unknown): ResumeContent {
       : [],
     certifications: strArray(raw.certifications),
     layout: normalizeLayout((raw as { layout?: unknown }).layout),
+    style: normalizeStyle((raw as { style?: unknown }).style),
   };
 }
 
@@ -148,6 +175,24 @@ function normalizeLayout(value: unknown): ResumeLayout {
     hidden: Array.isArray(raw.hidden) ? raw.hidden.filter(isId) : [],
   };
 }
+
+/** Clamp helper: keeps typography inside readable, ATS-safe bounds. */
+export function clampStyleValue(key: keyof ResumeStyle, value: number): number {
+  const { min, max } = STYLE_LIMITS[key];
+  if (!Number.isFinite(value)) return defaultStyle[key];
+  return Math.min(max, Math.max(min, value));
+}
+
+export function normalizeStyle(value: unknown): ResumeStyle {
+  const raw = (value ?? {}) as Partial<ResumeStyle>;
+  return {
+    fontScale: clampStyleValue("fontScale", Number(raw.fontScale ?? defaultStyle.fontScale)),
+    lineHeight: clampStyleValue("lineHeight", Number(raw.lineHeight ?? defaultStyle.lineHeight)),
+    sectionGap: clampStyleValue("sectionGap", Number(raw.sectionGap ?? defaultStyle.sectionGap)),
+    margin: clampStyleValue("margin", Number(raw.margin ?? defaultStyle.margin)),
+  };
+}
+
 
 /** Rough ATS heuristic used for the dashboard score chip. */
 export function estimateAtsScore(resume: ResumeContent): number {

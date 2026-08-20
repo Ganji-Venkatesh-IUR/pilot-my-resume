@@ -190,9 +190,21 @@
     position: absolute;
     inset: 0 auto auto 0;
     width: 100%;
+    max-width: none;
     margin: 0;
+    /* @page owns the margins during print, so drop the on-screen sheet padding. */
+    padding: 0 !important;
     box-shadow: none !important;
     border: none !important;
+    border-radius: 0 !important;
+  }
+
+  #resume-sheet section,
+  #resume-sheet li,
+  #resume-sheet h2,
+  #resume-sheet h3 {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   @page {
