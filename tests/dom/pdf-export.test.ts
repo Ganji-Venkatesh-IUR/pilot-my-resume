@@ -21,9 +21,6 @@ describe("exportResumePdf", () => {
     const printed: string[] = [];
     // happy-dom has no print implementation; capture the call instead.
     Object.defineProperty(window, "print", { value: () => printed.push("host"), writable: true });
-    const original = HTMLIFrameElement.prototype.contentWindow;
-    void original;
-
     const promise = exportResumePdf({ filename: "ada-lovelace", margin: 12 });
     const iframe = document.querySelector("iframe");
     expect(iframe).toBeTruthy();

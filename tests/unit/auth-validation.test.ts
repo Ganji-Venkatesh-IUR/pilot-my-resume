@@ -16,17 +16,15 @@ describe("signUpSchema", () => {
       fullName: testUser.fullName,
       email: testUser.email,
       password: testUser.password,
-      confirmPassword: testUser.password,
     });
     expect(result.success).toBe(true);
   });
 
-  it("rejects mismatched passwords", () => {
+  it("rejects a one-character name", () => {
     const result = signUpSchema.safeParse({
-      fullName: testUser.fullName,
+      fullName: "A",
       email: testUser.email,
       password: testUser.password,
-      confirmPassword: "something-else",
     });
     expect(result.success).toBe(false);
   });
@@ -40,7 +38,6 @@ describe("signUpSchema", () => {
       fullName: testUser.fullName,
       email: testUser.email,
       password,
-      confirmPassword: password,
     });
     expect(result.success).toBe(false);
   });
@@ -62,11 +59,11 @@ describe("password reset flows", () => {
     expect(
       resetPasswordSchema.safeParse({
         password: testUser.password,
-        confirmPassword: testUser.password,
+        confirm: testUser.password,
       }).success,
     ).toBe(true);
     expect(
-      resetPasswordSchema.safeParse({ password: testUser.password, confirmPassword: "x" }).success,
+      resetPasswordSchema.safeParse({ password: testUser.password, confirm: "x" }).success,
     ).toBe(false);
   });
 });
@@ -77,7 +74,6 @@ describe("profileSchema", () => {
       fullName: testUser.fullName,
       headline: "",
       location: "",
-      phone: "",
       githubUrl: "",
       linkedinUrl: "",
       websiteUrl: "",
@@ -88,7 +84,11 @@ describe("profileSchema", () => {
   it("rejects a malformed URL", () => {
     const result = profileSchema.safeParse({
       fullName: testUser.fullName,
+      headline: "",
+      location: "",
       githubUrl: "not a url",
+      linkedinUrl: "",
+      websiteUrl: "",
     });
     expect(result.success).toBe(false);
   });

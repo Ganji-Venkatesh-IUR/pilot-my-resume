@@ -39,7 +39,7 @@ describe("runJobMatch", () => {
     mockGateway(JSON.stringify({ score: 68, matched: ["React"], missing: ["Kubernetes"] }));
     const result = await runJobMatch({
       analysis: { role: "FE", requirements: [], keywords: ["React", "Kubernetes"] } as never,
-      resumeText: "React engineer",
+      resume: normalizeResume({ ...sampleResume, skills: ["React"] }),
     });
     expect(result.data.score).toBeGreaterThan(0);
     expect(result.data.keywordCoverage).toBe(50);

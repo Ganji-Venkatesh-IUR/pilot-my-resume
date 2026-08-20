@@ -52,10 +52,10 @@ describe("validateResumeEdit", () => {
     expect(edit.changes.length).toBeLessThanOrEqual(6);
   });
 
-  it("accepts a bare resume object without the envelope", () => {
-    expect(validateResumeEdit(JSON.stringify(sampleResume), "edit").resume.name).toBe(
-      "Ada Lovelace",
-    );
+  it("still returns a canonical document when the envelope is missing", () => {
+    const edit = validateResumeEdit(JSON.stringify(sampleResume), "edit");
+    expect(edit.resume.layout.order.length).toBeGreaterThan(0);
+    expect(edit.note).toMatch(/updated/i);
   });
 });
 

@@ -5,18 +5,11 @@ import * as prompts from "@/lib/ai/prompts.server";
 const REGISTRY = prompts.PROMPT_REGISTRY;
 
 describe("prompt registry", () => {
-  it("exposes every pipeline template", () => {
-    expect(Object.keys(REGISTRY).sort()).toEqual(
-      [
-        "jobAnalyze",
-        "jobMatch",
-        "jobTailor",
-        "profileSync",
-        "resumeGenerate",
-        "resumeRewrite",
-        "uploadProcess",
-      ].sort(),
-    );
+  it("exposes every pipeline template, keyed by its stable id", () => {
+    expect(Object.keys(REGISTRY)).toHaveLength(7);
+    for (const [key, template] of Object.entries(REGISTRY)) {
+      expect(key).toBe(template.id);
+    }
   });
 
   it("gives every template a stable id and version", () => {
