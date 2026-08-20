@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { resumeService } from "@/services/resume.service";
 import { CopilotPanel, type CopilotMessage } from "@/components/resume/CopilotPanel";
 import { ResumePreview } from "@/components/resume/ResumePreview";
-import { copilotEdit, generateResume } from "@/lib/careerpilot.functions";
+import { copilotEdit, generateResume, regenerateResume } from "@/lib/careerpilot.functions";
 import {
   TEMPLATES,
   estimateAtsScore,
@@ -38,6 +38,7 @@ function ResumeBuilder() {
   const { resumeId } = Route.useParams();
   const navigate = useNavigate();
   const runGenerate = useServerFn(generateResume);
+  const runRegenerate = useServerFn(regenerateResume);
   const runCopilot = useServerFn(copilotEdit);
 
   const [resume, setResume] = useState<ResumeContent | null>(null);
