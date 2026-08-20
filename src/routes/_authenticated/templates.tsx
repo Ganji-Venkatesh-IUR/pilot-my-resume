@@ -4,7 +4,12 @@ import { Check } from "lucide-react";
 import { PageHeader } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
 import { ResumePreview } from "@/components/resume/ResumePreview";
-import { TEMPLATES, type TemplateId, type ResumeContent } from "@/lib/resume-schema";
+import {
+  TEMPLATES,
+  defaultLayout,
+  type TemplateId,
+  type ResumeContent,
+} from "@/lib/resume-schema";
 
 export const Route = createFileRoute("/_authenticated/templates")({
   head: () => ({
@@ -23,6 +28,7 @@ export const Route = createFileRoute("/_authenticated/templates")({
 
 /** Static sample used to render each template thumbnail. */
 const SAMPLE: ResumeContent = {
+  layout: defaultLayout,
   name: "Alex Morgan",
   headline: "Senior Backend Engineer",
   email: "alex@example.com",
