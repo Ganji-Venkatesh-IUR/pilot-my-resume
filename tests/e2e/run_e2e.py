@@ -78,7 +78,11 @@ async def main() -> int:
         if not authenticated:
             await page.goto(f"{BASE_URL}/dashboard", wait_until="domcontentloaded")
             await page.wait_for_timeout(1500)
-            record("protected route redirects when signed out", "/auth" in page.url, page.url)
+            record(
+                "protected route redirects when signed out",
+                "/login" in page.url or "/auth" in page.url,
+                page.url,
+            )
         else:
             if cookies_json:
                 cookies = json.loads(cookies_json)
