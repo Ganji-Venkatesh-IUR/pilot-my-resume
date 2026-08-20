@@ -1,0 +1,27 @@
+import { defineConfig } from "vitest/config";
+import tsconfigPaths from "vite-tsconfig-paths";
+
+/**
+ * Test runner configuration.
+ *
+ * - `tests/unit`        pure functions, no IO (node env)
+ * - `tests/integration` service layer with mocked transport/database (node env)
+ * - `tests/dom`         browser-dependent helpers (happy-dom env)
+ * - `tests/e2e`         Playwright flows, run separately via `bun run test:e2e`
+ */
+export default defineConfig({
+  plugins: [tsconfigPaths()],
+  test: {
+    globals: true,
+    environment: "node",
+    setupFiles: ["./tests/setup.ts"],
+    include: ["tests/**/*.test.ts"],
+    exclude: ["tests/e2e/**", "node_modules/**"],
+    environmentMatchGlobs: [["tests/dom/**", "happy-dom"]],
+    testTimeout: 15_000,
+    coverage: {
+      reporter: ["text", "html"],
+      include: ["src/lib/**", "src/services/**"],
+    },
+  },
+});
