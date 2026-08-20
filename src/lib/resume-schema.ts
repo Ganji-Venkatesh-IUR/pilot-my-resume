@@ -24,6 +24,28 @@ export interface ResumeEducation {
   period: string;
 }
 
+/** Ordered, toggleable body sections of a resume. */
+export const SECTIONS = [
+  { id: "summary", label: "Summary" },
+  { id: "skills", label: "Skills" },
+  { id: "experience", label: "Experience" },
+  { id: "projects", label: "Projects" },
+  { id: "education", label: "Education" },
+  { id: "certifications", label: "Certifications" },
+] as const;
+
+export type SectionId = (typeof SECTIONS)[number]["id"];
+
+const SECTION_IDS = SECTIONS.map((s) => s.id) as readonly SectionId[];
+
+/** Section order + visibility, persisted alongside the resume content. */
+export interface ResumeLayout {
+  order: SectionId[];
+  hidden: SectionId[];
+}
+
+export const defaultLayout: ResumeLayout = { order: [...SECTION_IDS], hidden: [] };
+
 export interface ResumeContent {
   name: string;
   headline: string;
@@ -37,6 +59,7 @@ export interface ResumeContent {
   projects: ResumeProject[];
   education: ResumeEducation[];
   certifications: string[];
+  layout: ResumeLayout;
 }
 
 export const TEMPLATES = [
@@ -63,6 +86,7 @@ export const emptyResume: ResumeContent = {
   projects: [],
   education: [],
   certifications: [],
+  layout: defaultLayout,
 };
 
 /** Defensive normaliser — AI output and DB JSON are never fully trusted. */
@@ -105,6 +129,23 @@ export function normalizeResume(value: unknown): ResumeContent {
         }))
       : [],
     certifications: strArray(raw.certifications),
+    layout: normalizeLayout((raw as { layout?: unknown }).layout),
+  };
+}
+
+/** Layout is user-controlled state, so unknown/missing values fall back safely. */
+function normalizeLayout(value: unknown): ResumeLayout {
+  const raw = (value ?? {}) as Partial<ResumeLayout>;
+  const isId = (v: unknown): v is SectionId =>
+    typeof v === "string" && (SECTION_IDS as readonly string[]).includes(v);
+
+  const order = Array.isArray(raw.order) ? raw.order.filter(isId) : [];
+  // Append any section the stored order is missing so nothing disappears.
+  for (const id of SECTION_IDS) if (!order.includes(id)) order.push(id);
+
+  return {
+    order,
+    hidden: Array.isArray(raw.hidden) ? raw.hidden.filter(isId) : [],
   };
 }
 
