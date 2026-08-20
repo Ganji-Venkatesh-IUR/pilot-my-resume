@@ -1,5 +1,6 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
-import tsconfigPaths from "vite-tsconfig-paths";
+
 
 /**
  * Test runner configuration.
