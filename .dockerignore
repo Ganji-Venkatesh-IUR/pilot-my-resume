@@ -1,0 +1,14 @@
+node_modules
+.output
+.nitro
+.vinxi
+dist
+.git
+.github
+.env
+.env.*
+!.env.example
+tests/e2e/screenshots
+coverage
+*.log
+.DS_Store
