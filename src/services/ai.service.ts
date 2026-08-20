@@ -12,7 +12,7 @@ import {
   orchestrateResume,
   orchestrateRewrite,
   orchestrateUpload,
-} from "@/lib/ai.orchestrator";
+} from "@/lib/ai-orchestrator.functions";
 import type { ResumeContent } from "@/lib/resume-schema";
 import type { JobAnalysis, JobMatch } from "@/lib/job-schema";
 
