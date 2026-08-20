@@ -105,3 +105,39 @@ export const copilotEdit = createServerFn({ method: "POST" })
     const { reviseResume } = await import("./ai.server");
     return reviseResume(data);
   });
+
+/** Section-scoped copilot rewrite: preserves facts and explains major changes. */
+export const copilotRewrite = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (input: {
+      resume: ResumeContent;
+      instruction: string;
+      section?: string | undefined;
+      targetRole?: string | undefined;
+    }) => {
+      if (!input?.instruction?.trim()) throw new Error("Tell the copilot what to change.");
+      if (!input?.resume) throw new Error("Missing resume content.");
+      return input;
+    },
+  )
+  .handler(async ({ data }) => {
+    const { rewriteSection } = await import("./ai.server");
+    return rewriteSection(data);
+  });
+
+/** Switch the template for one resume (instant preview is client-side). */
+export const changeTemplate = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { resumeId: string; template: string }) => {
+    if (!input?.resumeId || !input?.template) throw new Error("Missing resume id or template.");
+    return input;
+  })
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("resumes")
+      .update({ template: data.template })
+      .eq("id", data.resumeId);
+    if (error) throw new Error(error.message);
+    return { template: data.template };
+  });

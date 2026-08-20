@@ -154,3 +154,56 @@ ${JSON.stringify(input.resume)}`,
     throw new Error("AI returned malformed edit data. Please try again.");
   }
 }
+
+/**
+ * Rewrite one section (or the whole resume) under a user instruction.
+ * The prompt forbids invented facts and asks for an explanation of the change.
+ */
+export async function rewriteSection(input: {
+  resume: ResumeContent;
+  instruction: string;
+  section?: string | undefined;
+  targetRole?: string | undefined;
+}): Promise<{ resume: ResumeContent; note: string; changes: string[] }> {
+  const scope = input.section && input.section !== "all"
+    ? `Only modify the "${input.section}" section. Every other field must be returned byte-identical.`
+    : "Modify only what the instruction requires; leave untouched fields identical.";
+
+  const content = await callGateway([
+    {
+      role: "system",
+      content: `${RESUME_RULES}
+${scope}
+Preserve every fact: employers, titles, dates, schools, metrics and technologies may be reworded but never invented, removed or altered in meaning.
+Return JSON: { "resume": ${SHAPE}, "note": string, "changes": string[] }
+"note" is one short sentence. "changes" lists up to 4 short bullet strings explaining the major edits.`,
+    },
+    {
+      role: "user",
+      content: `Target role: ${input.targetRole || "unspecified"}
+Section in focus: ${input.section || "all"}
+Instruction: ${input.instruction}
+
+Current resume JSON:
+${JSON.stringify(input.resume)}`,
+    },
+  ]);
+
+  try {
+    const parsed = JSON.parse(content) as {
+      resume?: unknown;
+      note?: string;
+      changes?: unknown;
+    };
+    return {
+      // Layout is user-owned state; the model never gets to reorder sections.
+      resume: { ...normalizeResume(parsed.resume ?? parsed), layout: input.resume.layout },
+      note: parsed.note ?? "Updated your resume.",
+      changes: Array.isArray(parsed.changes)
+        ? parsed.changes.filter((c): c is string => typeof c === "string").slice(0, 4)
+        : [],
+    };
+  } catch {
+    throw new Error("AI returned malformed edit data. Please try again.");
+  }
+}
