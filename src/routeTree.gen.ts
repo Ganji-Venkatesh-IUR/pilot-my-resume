@@ -16,6 +16,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as TmpTplCheckRouteImport } from './routes/tmp-tpl-check'
 import { Route as AuthenticatedBuilderRouteImport } from './routes/_authenticated/builder'
 import { Route as AuthenticatedCopilotRouteImport } from './routes/_authenticated/copilot'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -57,6 +58,11 @@ const RegisterRoute = RegisterRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TmpTplCheckRoute = TmpTplCheckRouteImport.update({
+  id: '/tmp-tpl-check',
+  path: '/tmp-tpl-check',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedBuilderRoute = AuthenticatedBuilderRouteImport.update({
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/tmp-tpl-check': typeof TmpTplCheckRoute
   '/builder': typeof AuthenticatedBuilderRoute
   '/copilot': typeof AuthenticatedCopilotRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/tmp-tpl-check': typeof TmpTplCheckRoute
   '/builder': typeof AuthenticatedBuilderRoute
   '/copilot': typeof AuthenticatedCopilotRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/tmp-tpl-check': typeof TmpTplCheckRoute
   '/_authenticated/builder': typeof AuthenticatedBuilderRoute
   '/_authenticated/copilot': typeof AuthenticatedCopilotRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/reset-password'
+    | '/tmp-tpl-check'
     | '/builder'
     | '/copilot'
     | '/dashboard'
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/reset-password'
+    | '/tmp-tpl-check'
     | '/builder'
     | '/copilot'
     | '/dashboard'
@@ -193,6 +204,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/reset-password'
+    | '/tmp-tpl-check'
     | '/_authenticated/builder'
     | '/_authenticated/copilot'
     | '/_authenticated/dashboard'
@@ -211,6 +223,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  TmpTplCheckRoute: typeof TmpTplCheckRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -262,6 +275,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tmp-tpl-check': {
+      id: '/tmp-tpl-check'
+      path: '/tmp-tpl-check'
+      fullPath: '/tmp-tpl-check'
+      preLoaderRoute: typeof TmpTplCheckRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/builder': {
@@ -356,6 +376,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  TmpTplCheckRoute: TmpTplCheckRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
