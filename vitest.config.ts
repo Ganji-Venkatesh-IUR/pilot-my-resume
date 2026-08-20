@@ -11,7 +11,9 @@ import { defineConfig } from "vitest/config";
  * - `tests/e2e`         Playwright flows, run separately via `bun run test:e2e`
  */
 export default defineConfig({
-  plugins: [tsconfigPaths()],
+  resolve: {
+    alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
+  },
   test: {
     globals: true,
     environment: "node",
