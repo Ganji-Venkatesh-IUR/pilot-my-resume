@@ -14,6 +14,85 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_activity_logs: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          error_message: string | null
+          id: string
+          input_tokens: number | null
+          job_target_id: string | null
+          metadata: Json
+          model: string | null
+          output_tokens: number | null
+          prompt_version: string | null
+          resume_id: string | null
+          status: string
+          task: string
+          trace_id: string | null
+          upload_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          input_tokens?: number | null
+          job_target_id?: string | null
+          metadata?: Json
+          model?: string | null
+          output_tokens?: number | null
+          prompt_version?: string | null
+          resume_id?: string | null
+          status?: string
+          task: string
+          trace_id?: string | null
+          upload_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          input_tokens?: number | null
+          job_target_id?: string | null
+          metadata?: Json
+          model?: string | null
+          output_tokens?: number | null
+          prompt_version?: string | null
+          resume_id?: string | null
+          status?: string
+          task?: string
+          trace_id?: string | null
+          upload_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_activity_logs_job_target_id_fkey"
+            columns: ["job_target_id"]
+            isOneToOne: false
+            referencedRelation: "job_targets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_activity_logs_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_activity_logs_upload_id_fkey"
+            columns: ["upload_id"]
+            isOneToOne: false
+            referencedRelation: "uploads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       career_entries: {
         Row: {
           bullets: Json
@@ -190,6 +269,111 @@ export type Database = {
           website_url?: string | null
         }
         Relationships: []
+      }
+      resume_templates: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          is_active: boolean
+          is_ats_safe: boolean
+          key: string
+          name: string
+          preview_image_url: string | null
+          sort_order: number
+          style_defaults: Json
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean
+          is_ats_safe?: boolean
+          key: string
+          name: string
+          preview_image_url?: string | null
+          sort_order?: number
+          style_defaults?: Json
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean
+          is_ats_safe?: boolean
+          key?: string
+          name?: string
+          preview_image_url?: string | null
+          sort_order?: number
+          style_defaults?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      resume_versions: {
+        Row: {
+          ats_score: number | null
+          content: Json
+          created_at: string
+          id: string
+          job_target_id: string | null
+          label: string | null
+          resume_id: string
+          source: string
+          template: string | null
+          updated_at: string
+          user_id: string
+          version_number: number
+        }
+        Insert: {
+          ats_score?: number | null
+          content?: Json
+          created_at?: string
+          id?: string
+          job_target_id?: string | null
+          label?: string | null
+          resume_id: string
+          source?: string
+          template?: string | null
+          updated_at?: string
+          user_id: string
+          version_number?: number
+        }
+        Update: {
+          ats_score?: number | null
+          content?: Json
+          created_at?: string
+          id?: string
+          job_target_id?: string | null
+          label?: string | null
+          resume_id?: string
+          source?: string
+          template?: string | null
+          updated_at?: string
+          user_id?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_versions_job_target_id_fkey"
+            columns: ["job_target_id"]
+            isOneToOne: false
+            referencedRelation: "job_targets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resume_versions_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       resumes: {
         Row: {
