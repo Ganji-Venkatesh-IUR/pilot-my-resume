@@ -45,8 +45,9 @@ function Editable({
 }
 
 /**
- * Renders a resume into one of five ATS-safe templates.
+ * Renders a resume using a template descriptor from the template registry.
  * Every template is plain text flow — no tables or images — so parsers read it.
+ * Typography/spacing come from `resume.style` (already clamped to safe ranges).
  * When `editable` is set, text nodes become inline-editable and commit on blur.
  */
 export function ResumePreview({
@@ -60,13 +61,22 @@ export function ResumePreview({
   editable?: boolean;
   onChange?: (next: ResumeContent) => void;
 }) {
-  const isEditorial = template === "editorial";
-  const isCompact = template === "compact";
-  const isSidebar = template === "meridian";
-  const isSignal = template === "signal";
+  const t = getTemplate(template);
+  const style = normalizeStyle(resume.style);
 
-  const base = isCompact ? "text-[11px] leading-snug" : "text-[12.5px] leading-relaxed";
-  const font = isEditorial ? "font-serif" : "font-sans";
+  const isSidebar = t.sidebar;
+  const font =
+    t.font === "serif" ? "font-serif" : t.font === "mono-heading" ? "font-sans" : "font-sans";
+  const headingFont = t.font === "mono-heading" ? "font-mono" : "";
+
+  const fontSize = t.baseSize * style.fontScale;
+  const sheetStyle: CSSProperties = {
+    fontSize: `${fontSize}px`,
+    lineHeight: t.leading * style.lineHeight,
+    padding: `${style.margin * 1.4}mm ${style.margin * 1.6}mm`,
+    // Drives section rhythm below.
+    ["--section-gap" as string]: `${1.1 * style.sectionGap}rem`,
+  };
 
   const patch = (next: Partial<ResumeContent>) => onChange?.({ ...resume, ...next });
   const canEdit = editable && Boolean(onChange);
@@ -74,16 +84,21 @@ export function ResumePreview({
   const heading = (label: string) => (
     <h3
       className={[
-        "mt-4 mb-1.5 font-semibold uppercase tracking-[0.14em]",
-        isCompact ? "text-[10px]" : "text-[11px]",
-        isSignal ? "text-primary" : "text-foreground",
-        isEditorial ? "border-b border-border pb-1 tracking-[0.2em]" : "",
-        !isEditorial && !isSignal ? "border-b border-border pb-1" : "",
+        "mb-1.5 font-semibold uppercase",
+        headingFont,
+        t.accentHeadings ? "text-primary" : "text-foreground",
+        t.headingRule ? "border-b border-border pb-1" : "",
       ].join(" ")}
+      style={{
+        fontSize: `${fontSize * 0.86}px`,
+        letterSpacing: t.headingTracking,
+        marginTop: "var(--section-gap)",
+      }}
     >
       {label}
     </h3>
   );
+
 
   const contact = [resume.email, resume.phone, resume.location, ...resume.links].filter(Boolean);
 
