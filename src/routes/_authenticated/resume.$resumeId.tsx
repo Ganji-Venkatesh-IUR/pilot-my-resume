@@ -367,9 +367,14 @@ function ResumeEditor() {
 
       {/* Three panels: sections · live preview · copilot */}
       <div className="grid gap-5 lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[220px_minmax(0,1fr)_360px]">
-        <aside className="lg:sticky lg:top-24 lg:self-start print:hidden">
+        <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start print:hidden">
           <SectionSidebar layout={resume.layout} counts={counts} onChange={handleLayout} />
+          <StyleControls
+            style={resume.style}
+            onChange={(style) => commit({ ...resume, style })}
+          />
         </aside>
+
 
         <div>
           {hasContent ? (
