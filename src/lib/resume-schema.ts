@@ -111,7 +111,9 @@ export const emptyResume: ResumeContent = {
   education: [],
   certifications: [],
   layout: defaultLayout,
+  style: defaultStyle,
 };
+
 
 /** Defensive normaliser — AI output and DB JSON are never fully trusted. */
 export function normalizeResume(value: unknown): ResumeContent {
