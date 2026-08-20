@@ -9,7 +9,14 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:dom": "vitest run tests/dom",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "python3 tests/e2e/run_e2e.py"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

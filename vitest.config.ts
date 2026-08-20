@@ -7,7 +7,7 @@ import { defineConfig } from "vitest/config";
  *
  * - `tests/unit`        pure functions, no IO (node env)
  * - `tests/integration` service layer with mocked transport/database (node env)
- * - `tests/dom`         browser-dependent helpers (happy-dom env)
+ * - `tests/dom`         browser-dependent helpers (per-file `@vitest-environment happy-dom`)
  * - `tests/e2e`         Playwright flows, run separately via `bun run test:e2e`
  */
 export default defineConfig({
@@ -20,7 +20,6 @@ export default defineConfig({
     setupFiles: ["./tests/setup.ts"],
     include: ["tests/**/*.test.ts"],
     exclude: ["tests/e2e/**", "node_modules/**"],
-    environmentMatchGlobs: [["tests/dom/**", "happy-dom"]],
     testTimeout: 15_000,
     coverage: {
       reporter: ["text", "html"],
