@@ -74,12 +74,17 @@ export async function saveContent(
   content: ResumeContent,
   patch?: { title?: string | undefined; template?: string | undefined },
 ) {
-  const payload: Record<string, unknown> = {
+  const payload: {
+    content: Json;
+    ats_score: number;
+    title?: string;
+    template?: string;
+  } = {
     content: content as unknown as Json,
     ats_score: estimateAtsScore(content),
   };
-  if (patch?.title) payload["title"] = patch.title;
-  if (patch?.template) payload["template"] = patch.template;
+  if (patch?.title) payload.title = patch.title;
+  if (patch?.template) payload.template = patch.template;
 
   const { error } = await supabase.from("resumes").update(payload).eq("id", id);
   if (error) throw new Error(error.message);
