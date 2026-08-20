@@ -4,6 +4,7 @@ import {
   FileText,
   Sparkles,
   LayoutTemplate,
+  Target,
   User,
   Settings,
 } from "lucide-react";
@@ -13,6 +14,7 @@ export const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/upload", label: "Upload center", icon: UploadCloud },
   { to: "/builder", label: "Resume builder", icon: FileText },
+  { to: "/tailor", label: "Job tailoring", icon: Target },
   { to: "/copilot", label: "AI copilot", icon: Sparkles },
   { to: "/templates", label: "Templates", icon: LayoutTemplate },
 ] as const;
