@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      career_entries: {
+        Row: {
+          bullets: Json
+          created_at: string
+          description: string | null
+          end_date: string | null
+          id: string
+          is_current: boolean
+          kind: string
+          level: string | null
+          location: string | null
+          metadata: Json
+          organization: string | null
+          position: number
+          start_date: string | null
+          subtitle: string | null
+          tags: Json
+          title: string
+          updated_at: string
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          bullets?: Json
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_current?: boolean
+          kind: string
+          level?: string | null
+          location?: string | null
+          metadata?: Json
+          organization?: string | null
+          position?: number
+          start_date?: string | null
+          subtitle?: string | null
+          tags?: Json
+          title?: string
+          updated_at?: string
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          bullets?: Json
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_current?: boolean
+          kind?: string
+          level?: string | null
+          location?: string | null
+          metadata?: Json
+          organization?: string | null
+          position?: number
+          start_date?: string | null
+          subtitle?: string | null
+          tags?: Json
+          title?: string
+          updated_at?: string
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       job_targets: {
         Row: {
           analysis: Json | null
@@ -85,8 +151,11 @@ export type Database = {
           github_url: string | null
           headline: string | null
           id: string
+          job_title: string | null
           linkedin_url: string | null
           location: string | null
+          phone: string | null
+          summary: string | null
           updated_at: string
           website_url: string | null
         }
@@ -97,8 +166,11 @@ export type Database = {
           github_url?: string | null
           headline?: string | null
           id: string
+          job_title?: string | null
           linkedin_url?: string | null
           location?: string | null
+          phone?: string | null
+          summary?: string | null
           updated_at?: string
           website_url?: string | null
         }
@@ -109,8 +181,11 @@ export type Database = {
           github_url?: string | null
           headline?: string | null
           id?: string
+          job_title?: string | null
           linkedin_url?: string | null
           location?: string | null
+          phone?: string | null
+          summary?: string | null
           updated_at?: string
           website_url?: string | null
         }

@@ -32,38 +32,44 @@ export async function fetchResumeRow(supabase: Client, id: string): Promise<Resu
   return data as ResumeRow;
 }
 
-/** Collect uploads + profile + resume inputs into the normalized source shape. */
+/**
+ * Collect the career knowledge profile + uploads + resume inputs into the
+ * normalized source shape. The knowledge profile is the source of truth, so it
+ * is prepended to the corpus ahead of noisier uploaded documents.
+ */
 export async function collectSource(
   supabase: Client,
   userId: string,
   row: ResumeRow,
 ): Promise<NormalizedSource> {
-  const [{ data: uploads }, { data: profile }] = await Promise.all([
+  const { loadCareerProfile } = await import("./career.server");
+  const { careerProfileToText } = await import("./career-schema");
+
+  const [{ data: uploads }, career] = await Promise.all([
     supabase
       .from("uploads")
       .select("kind, label, source_url, extracted_text, status")
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(25),
-    supabase
-      .from("profiles")
-      .select("full_name, email, headline, location")
-      .eq("id", userId)
-      .maybeSingle(),
+    loadCareerProfile(supabase, userId),
   ]);
+
+  const knowledgeText = careerProfileToText(career);
+  const pasted = [knowledgeText, row.source_text ?? ""].filter(Boolean).join("\n\n");
 
   return normalizeSource({
     uploads: uploads ?? [],
     profile: {
-      fullName: profile?.full_name ?? undefined,
-      email: profile?.email ?? undefined,
-      headline: profile?.headline ?? undefined,
-      location: profile?.location ?? undefined,
+      fullName: career.personal.fullName || undefined,
+      email: career.personal.email || undefined,
+      headline: career.personal.headline || career.personal.jobTitle || undefined,
+      location: career.personal.location || undefined,
     },
     targetRole: row.target_role ?? undefined,
-    pastedText: row.source_text ?? undefined,
-    githubUrl: row.github_url ?? undefined,
-    linkedinUrl: row.linkedin_url ?? undefined,
+    pastedText: pasted || undefined,
+    githubUrl: row.github_url ?? career.personal.githubUrl ?? undefined,
+    linkedinUrl: row.linkedin_url ?? career.personal.linkedinUrl ?? undefined,
   });
 }
 
