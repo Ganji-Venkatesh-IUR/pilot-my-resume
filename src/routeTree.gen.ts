@@ -25,6 +25,7 @@ import { Route as AuthenticatedTailorRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedTemplatesRouteImport } from './routes/_authenticated/templates'
 import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated/upload'
 import { Route as AuthenticatedResumeResumeIdRouteImport } from './routes/_authenticated/resume.$resumeId'
+import { Route as AuthenticatedTailorJobIdRouteImport } from './routes/_authenticated/tailor.$jobId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -106,6 +107,12 @@ const AuthenticatedResumeResumeIdRoute =
     path: '/resume/$resumeId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedTailorJobIdRoute =
+  AuthenticatedTailorJobIdRouteImport.update({
+    id: '/$jobId',
+    path: '/$jobId',
+    getParentRoute: () => AuthenticatedTailorRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -119,10 +126,11 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/tailor': typeof AuthenticatedTailorRoute
+  '/tailor': typeof AuthenticatedTailorRouteWithChildren
   '/templates': typeof AuthenticatedTemplatesRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/resume/$resumeId': typeof AuthenticatedResumeResumeIdRoute
+  '/tailor/$jobId': typeof AuthenticatedTailorJobIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -136,10 +144,11 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/tailor': typeof AuthenticatedTailorRoute
+  '/tailor': typeof AuthenticatedTailorRouteWithChildren
   '/templates': typeof AuthenticatedTemplatesRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/resume/$resumeId': typeof AuthenticatedResumeResumeIdRoute
+  '/tailor/$jobId': typeof AuthenticatedTailorJobIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -155,10 +164,11 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
-  '/_authenticated/tailor': typeof AuthenticatedTailorRoute
+  '/_authenticated/tailor': typeof AuthenticatedTailorRouteWithChildren
   '/_authenticated/templates': typeof AuthenticatedTemplatesRoute
   '/_authenticated/upload': typeof AuthenticatedUploadRoute
   '/_authenticated/resume/$resumeId': typeof AuthenticatedResumeResumeIdRoute
+  '/_authenticated/tailor/$jobId': typeof AuthenticatedTailorJobIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -178,6 +188,7 @@ export interface FileRouteTypes {
     | '/templates'
     | '/upload'
     | '/resume/$resumeId'
+    | '/tailor/$jobId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -195,6 +206,7 @@ export interface FileRouteTypes {
     | '/templates'
     | '/upload'
     | '/resume/$resumeId'
+    | '/tailor/$jobId'
   id:
     | '__root__'
     | '/'
@@ -213,6 +225,7 @@ export interface FileRouteTypes {
     | '/_authenticated/templates'
     | '/_authenticated/upload'
     | '/_authenticated/resume/$resumeId'
+    | '/_authenticated/tailor/$jobId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -339,8 +352,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedResumeResumeIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/tailor/$jobId': {
+      id: '/_authenticated/tailor/$jobId'
+      path: '/$jobId'
+      fullPath: '/tailor/$jobId'
+      preLoaderRoute: typeof AuthenticatedTailorJobIdRouteImport
+      parentRoute: typeof AuthenticatedTailorRoute
+    }
   }
 }
+
+interface AuthenticatedTailorRouteChildren {
+  AuthenticatedTailorJobIdRoute: typeof AuthenticatedTailorJobIdRoute
+}
+
+const AuthenticatedTailorRouteChildren: AuthenticatedTailorRouteChildren = {
+  AuthenticatedTailorJobIdRoute: AuthenticatedTailorJobIdRoute,
+}
+
+const AuthenticatedTailorRouteWithChildren =
+  AuthenticatedTailorRoute._addFileChildren(AuthenticatedTailorRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedBuilderRoute: typeof AuthenticatedBuilderRoute
@@ -348,7 +379,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
-  AuthenticatedTailorRoute: typeof AuthenticatedTailorRoute
+  AuthenticatedTailorRoute: typeof AuthenticatedTailorRouteWithChildren
   AuthenticatedTemplatesRoute: typeof AuthenticatedTemplatesRoute
   AuthenticatedUploadRoute: typeof AuthenticatedUploadRoute
   AuthenticatedResumeResumeIdRoute: typeof AuthenticatedResumeResumeIdRoute
@@ -360,7 +391,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
-  AuthenticatedTailorRoute: AuthenticatedTailorRoute,
+  AuthenticatedTailorRoute: AuthenticatedTailorRouteWithChildren,
   AuthenticatedTemplatesRoute: AuthenticatedTemplatesRoute,
   AuthenticatedUploadRoute: AuthenticatedUploadRoute,
   AuthenticatedResumeResumeIdRoute: AuthenticatedResumeResumeIdRoute,
