@@ -1,5 +1,7 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { getTemplate, normalizeStyle } from "@/lib/resume-schema";
 import type { ResumeContent, SectionId, TemplateId } from "@/lib/resume-schema";
+
 
 /** Inline-editable text node. Commits on blur so typing never fights React state. */
 function Editable({
