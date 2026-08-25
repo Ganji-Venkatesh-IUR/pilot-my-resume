@@ -53,27 +53,6 @@ function BuilderPage() {
     q ? `${r.title} ${r.target_role ?? ""}`.toLowerCase().includes(q.toLowerCase()) : true,
   );
 
-  async function handleCreate(event: React.FormEvent) {
-    event.preventDefault();
-    setCreating(true);
-    try {
-      const id = await resumeService.create({
-        title,
-        targetRole,
-        sourceText,
-        githubUrl,
-        linkedinUrl,
-        template: template ?? "atlas",
-      });
-      await queryClient.invalidateQueries({ queryKey: ["resumes"] });
-      navigate({ to: "/resume/$resumeId", params: { resumeId: id } });
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not create the resume.");
-    } finally {
-      setCreating(false);
-    }
-  }
-
   async function handleDelete(id: string) {
     try {
       await resumeService.remove(id);
