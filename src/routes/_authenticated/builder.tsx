@@ -1,13 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { FileText, Github, Linkedin, Loader2, Plus, Trash2 } from "lucide-react";
+import { FileText, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { resumeService } from "@/services/resume.service";
 import { TEMPLATES, type TemplateId } from "@/lib/resume-schema";
 
@@ -45,14 +41,8 @@ interface ResumeRow {
 function BuilderPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { q, template } = Route.useSearch();
+  const { q } = Route.useSearch();
 
-  const [creating, setCreating] = useState(false);
-  const [title, setTitle] = useState("");
-  const [targetRole, setTargetRole] = useState("");
-  const [sourceText, setSourceText] = useState("");
-  const [githubUrl, setGithubUrl] = useState("");
-  const [linkedinUrl, setLinkedinUrl] = useState("");
 
   const { data: resumes, isLoading } = useQuery({
     queryKey: ["resumes"],
@@ -62,27 +52,6 @@ function BuilderPage() {
   const filtered = (resumes ?? []).filter((r) =>
     q ? `${r.title} ${r.target_role ?? ""}`.toLowerCase().includes(q.toLowerCase()) : true,
   );
-
-  async function handleCreate(event: React.FormEvent) {
-    event.preventDefault();
-    setCreating(true);
-    try {
-      const id = await resumeService.create({
-        title,
-        targetRole,
-        sourceText,
-        githubUrl,
-        linkedinUrl,
-        template: template ?? "atlas",
-      });
-      await queryClient.invalidateQueries({ queryKey: ["resumes"] });
-      navigate({ to: "/resume/$resumeId", params: { resumeId: id } });
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not create the resume.");
-    } finally {
-      setCreating(false);
-    }
-  }
 
   async function handleDelete(id: string) {
     try {
@@ -106,7 +75,7 @@ function BuilderPage() {
         }
       />
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_400px]">
+      <div className="grid gap-8">
         <section aria-labelledby="resumes-heading">
           <h2
             id="resumes-heading"
@@ -164,77 +133,6 @@ function BuilderPage() {
           )}
         </section>
 
-        <section
-          aria-labelledby="new-resume-heading"
-          className="h-fit rounded-xl border border-border bg-card p-5 shadow-soft"
-        >
-          <h2
-            id="new-resume-heading"
-            className="text-xs font-semibold uppercase tracking-widest text-muted-foreground"
-          >
-            New resume
-          </h2>
-          <form onSubmit={handleCreate} className="mt-4 space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="title">Name this resume</Label>
-              <Input
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Backend engineer — 2026"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="role">Target role</Label>
-              <Input
-                id="role"
-                value={targetRole}
-                onChange={(e) => setTargetRole(e.target.value)}
-                placeholder="Senior Backend Engineer"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="github" className="flex items-center gap-1.5">
-                <Github className="size-3.5" aria-hidden /> GitHub URL
-              </Label>
-              <Input
-                id="github"
-                value={githubUrl}
-                onChange={(e) => setGithubUrl(e.target.value)}
-                placeholder="https://github.com/username"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="linkedin" className="flex items-center gap-1.5">
-                <Linkedin className="size-3.5" aria-hidden /> LinkedIn URL
-              </Label>
-              <Input
-                id="linkedin"
-                value={linkedinUrl}
-                onChange={(e) => setLinkedinUrl(e.target.value)}
-                placeholder="https://linkedin.com/in/username"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="source">Paste your resume or notes</Label>
-              <Textarea
-                id="source"
-                rows={6}
-                value={sourceText}
-                onChange={(e) => setSourceText(e.target.value)}
-                placeholder="Paste your current resume, experience notes, or project descriptions…"
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={creating}>
-              {creating ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Plus className="size-4" aria-hidden />
-              )}
-              Create resume
-            </Button>
-          </form>
-        </section>
       </div>
     </>
   );

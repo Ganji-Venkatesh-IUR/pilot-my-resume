@@ -148,7 +148,7 @@ function Dashboard() {
         description="Everything you need to ship an ATS-friendly resume today."
         actions={
           <Button asChild>
-            <Link to="/builder">
+            <Link to="/upload">
               <Plus className="size-4" aria-hidden /> Create resume
             </Link>
           </Button>
