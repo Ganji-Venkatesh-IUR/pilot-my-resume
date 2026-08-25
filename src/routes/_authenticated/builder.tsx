@@ -41,14 +41,8 @@ interface ResumeRow {
 function BuilderPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { q, template } = Route.useSearch();
+  const { q } = Route.useSearch();
 
-  const [creating, setCreating] = useState(false);
-  const [title, setTitle] = useState("");
-  const [targetRole, setTargetRole] = useState("");
-  const [sourceText, setSourceText] = useState("");
-  const [githubUrl, setGithubUrl] = useState("");
-  const [linkedinUrl, setLinkedinUrl] = useState("");
 
   const { data: resumes, isLoading } = useQuery({
     queryKey: ["resumes"],
