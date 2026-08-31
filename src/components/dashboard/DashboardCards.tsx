@@ -9,13 +9,7 @@ import { Button } from "@/components/ui/button";
 type Icon = ComponentType<{ className?: string }>;
 
 /** Base surface every dashboard block sits on. */
-export function SurfaceCard({
-  className,
-  children,
-}: {
-  className?: string;
-  children: ReactNode;
-}) {
+export function SurfaceCard({ className, children }: { className?: string; children: ReactNode }) {
   return (
     <div className={cn("rounded-xl border border-border bg-card p-5 shadow-soft", className)}>
       {children}
@@ -135,13 +129,7 @@ export function EmptyState({
 }
 
 /** Accessible progress meter for profile completion. */
-export function ProgressMeter({
-  value,
-  label,
-}: {
-  value: number;
-  label: string;
-}) {
+export function ProgressMeter({ value, label }: { value: number; label: string }) {
   return (
     <div>
       <div className="flex items-center justify-between text-sm">

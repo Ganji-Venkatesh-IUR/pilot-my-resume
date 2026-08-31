@@ -95,7 +95,6 @@ export interface ResumeContent {
 export { TEMPLATES, DEFAULT_TEMPLATE, getTemplate } from "./resume-templates";
 export type { TemplateId, TemplateDescriptor } from "./resume-templates";
 
-
 /** Empty resume used before AI generation and as a merge fallback. */
 export const emptyResume: ResumeContent = {
   name: "",
@@ -113,7 +112,6 @@ export const emptyResume: ResumeContent = {
   layout: defaultLayout,
   style: defaultStyle,
 };
-
 
 /** Defensive normaliser — AI output and DB JSON are never fully trusted. */
 export function normalizeResume(value: unknown): ResumeContent {
@@ -192,7 +190,6 @@ export function normalizeStyle(value: unknown): ResumeStyle {
     margin: clampStyleValue("margin", Number(raw.margin ?? defaultStyle.margin)),
   };
 }
-
 
 /** Rough ATS heuristic used for the dashboard score chip. */
 export function estimateAtsScore(resume: ResumeContent): number {

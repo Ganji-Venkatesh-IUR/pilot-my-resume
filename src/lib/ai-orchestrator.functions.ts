@@ -104,13 +104,11 @@ export const orchestrateJobMatch = createServerFn({ method: "POST" })
 /** Tailor a resume for one job without inventing facts. */
 export const orchestrateJobTailor = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
-    (input: { analysis: JobAnalysis; match?: JobMatch; resume: ResumeContent }) => {
-      if (!input?.analysis) throw new Error("Missing job analysis.");
-      if (!input?.resume) throw new Error("Missing resume content.");
-      return input;
-    },
-  )
+  .inputValidator((input: { analysis: JobAnalysis; match?: JobMatch; resume: ResumeContent }) => {
+    if (!input?.analysis) throw new Error("Missing job analysis.");
+    if (!input?.resume) throw new Error("Missing resume content.");
+    return input;
+  })
   .handler(async ({ data }) => {
     const { runJobTailor, normalizeResume } = await import("./ai/orchestrator.server");
     return runJobTailor({

@@ -18,7 +18,8 @@ export const analyzeJob = createServerFn({ method: "POST" })
       baseResumeId?: string | undefined;
     }) => {
       const text = input?.jdText?.trim() ?? "";
-      if (text.length < 80) throw new Error("Paste a fuller job description (at least 80 characters).");
+      if (text.length < 80)
+        throw new Error("Paste a fuller job description (at least 80 characters).");
       return input;
     },
   )

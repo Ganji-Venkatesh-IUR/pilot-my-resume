@@ -92,11 +92,7 @@ export const deleteResume = createServerFn({ method: "POST" })
 export const copilotEdit = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (input: {
-      resume: ResumeContent;
-      instruction: string;
-      targetRole?: string | undefined;
-    }) => {
+    (input: { resume: ResumeContent; instruction: string; targetRole?: string | undefined }) => {
       if (!input?.instruction?.trim()) throw new Error("Tell the copilot what to change.");
       return input;
     },

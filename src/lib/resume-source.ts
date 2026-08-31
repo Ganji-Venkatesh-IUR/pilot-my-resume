@@ -127,9 +127,7 @@ export function buildCorpus(source: NormalizedSource): string {
   if (source.targetRole) blocks.push(`## Target role\n${source.targetRole}`);
 
   if (source.links.length) {
-    blocks.push(
-      `## Profile links\n${source.links.map((l) => `- ${l.kind}: ${l.url}`).join("\n")}`,
-    );
+    blocks.push(`## Profile links\n${source.links.map((l) => `- ${l.kind}: ${l.url}`).join("\n")}`);
   }
 
   if (source.pastedText) blocks.push(`## Pasted career notes\n${source.pastedText}`);

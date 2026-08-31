@@ -18,7 +18,7 @@ export function createFakeSupabase(seed: FakeDb = {}) {
   const calls: Array<{ table: string; op: string; payload?: unknown }> = [];
 
   function builder(table: string) {
-    let rows = () => (db[table] ??= []);
+    const rows = () => (db[table] ??= []);
     const filters: Array<(r: Row) => boolean> = [];
     let pending: { op: "select" | "insert" | "update" | "delete"; payload?: Row } = {
       op: "select",
@@ -79,7 +79,10 @@ export function createFakeSupabase(seed: FakeDb = {}) {
       },
       single: async () => {
         const res = resolve();
-        return { data: res.data?.[0] ?? null, error: res.data?.length ? null : { message: "no rows" } };
+        return {
+          data: res.data?.[0] ?? null,
+          error: res.data?.length ? null : { message: "no rows" },
+        };
       },
       maybeSingle: async () => {
         const res = resolve();
@@ -100,7 +103,7 @@ export function createFakeSupabase(seed: FakeDb = {}) {
   } as unknown as {
     db: FakeDb;
     calls: typeof calls;
-    from: (table: string) => any;
+    from: (table: string) => Record<string, unknown>;
     auth: { getUser: () => Promise<unknown> };
   };
 }
@@ -114,10 +117,10 @@ export function mockGateway(...contents: Array<string | { status: number; body?:
     if (typeof next !== "string") {
       return new Response(next.body ?? "error", { status: next.status });
     }
-    return new Response(
-      JSON.stringify({ choices: [{ message: { content: next } }] }),
-      { status: 200, headers: { "content-type": "application/json" } },
-    );
+    return new Response(JSON.stringify({ choices: [{ message: { content: next } }] }), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
   });
   globalThis.fetch = fetchMock as unknown as typeof fetch;
   return fetchMock;

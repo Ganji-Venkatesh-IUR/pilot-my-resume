@@ -45,7 +45,10 @@ describe("validateResumeEdit", () => {
 
   it("falls back to a default note and caps the change list", () => {
     const edit = validateResumeEdit(
-      JSON.stringify({ resume: sampleResume, changes: Array.from({ length: 20 }, (_, i) => `c${i}`) }),
+      JSON.stringify({
+        resume: sampleResume,
+        changes: Array.from({ length: 20 }, (_, i) => `c${i}`),
+      }),
       "edit",
     );
     expect(edit.note).toMatch(/updated/i);

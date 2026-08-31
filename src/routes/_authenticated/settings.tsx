@@ -7,7 +7,13 @@ import { PageHeader } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { authService } from "@/services/auth.service";
 import { TEMPLATES, type TemplateId } from "@/lib/resume-schema";
 
@@ -112,7 +118,10 @@ function SettingsPage() {
           <div className="mt-4 space-y-5">
             <div className="space-y-1.5">
               <Label htmlFor="default-template">Default template</Label>
-              <Select value={defaultTemplate} onValueChange={(v) => changeTemplate(v as TemplateId)}>
+              <Select
+                value={defaultTemplate}
+                onValueChange={(v) => changeTemplate(v as TemplateId)}
+              >
                 <SelectTrigger id="default-template">
                   <SelectValue />
                 </SelectTrigger>

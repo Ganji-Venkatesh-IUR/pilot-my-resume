@@ -43,7 +43,6 @@ function BuilderPage() {
   const queryClient = useQueryClient();
   const { q } = Route.useSearch();
 
-
   const { data: resumes, isLoading } = useQuery({
     queryKey: ["resumes"],
     queryFn: (): Promise<ResumeRow[]> => resumeService.list(),
@@ -132,7 +131,6 @@ function BuilderPage() {
             </div>
           )}
         </section>
-
       </div>
     </>
   );

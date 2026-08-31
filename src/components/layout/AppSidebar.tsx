@@ -16,11 +16,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <nav aria-label="Main" className="flex h-full flex-col gap-1 p-3">
-      <Link
-        to="/dashboard"
-        onClick={onNavigate}
-        className="mb-4 flex items-center gap-2 px-2 py-1"
-      >
+      <Link to="/dashboard" onClick={onNavigate} className="mb-4 flex items-center gap-2 px-2 py-1">
         <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
           <Compass className="size-4" aria-hidden />
         </span>
@@ -28,13 +24,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
       </Link>
 
       {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
-        <Link
-          key={to}
-          to={to}
-          onClick={onNavigate}
-          className={linkBase}
-          activeProps={activeProps}
-        >
+        <Link key={to} to={to} onClick={onNavigate} className={linkBase} activeProps={activeProps}>
           <Icon className="size-4 shrink-0" aria-hidden />
           {label}
         </Link>

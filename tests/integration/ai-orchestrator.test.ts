@@ -1,10 +1,6 @@
 /** Integration tests — orchestrated AI pipelines with a mocked gateway. */
 import { describe, expect, it } from "vitest";
-import {
-  runJobAnalysis,
-  runJobMatch,
-  runResumeRewrite,
-} from "@/lib/ai/orchestrator.server";
+import { runJobAnalysis, runJobMatch, runResumeRewrite } from "@/lib/ai/orchestrator.server";
 import { normalizeResume } from "@/lib/resume-schema";
 import { createFakeSupabase, mockGateway } from "../fixtures/supabase";
 import { sampleJobDescription, sampleResume } from "../fixtures/career";

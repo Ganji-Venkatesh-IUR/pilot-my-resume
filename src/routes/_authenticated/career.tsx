@@ -53,8 +53,7 @@ function CareerProfilePage() {
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["career-profile"] });
 
   const createMutation = useMutation({
-    mutationFn: (kind: CareerKind) =>
-      careerService.create({ ...blankEntry(kind, 999), kind }),
+    mutationFn: (kind: CareerKind) => careerService.create({ ...blankEntry(kind, 999), kind }),
     onSuccess: invalidate,
     onError: (e: Error) => toast.error(e.message || "Could not add that item."),
   });
@@ -272,7 +271,12 @@ function PersonalInfoCard({
         }}
       >
         <div className="grid gap-4 sm:grid-cols-2">
-          <TextField id="p-name" label="Full name" value={form.fullName} onChange={set("fullName")} />
+          <TextField
+            id="p-name"
+            label="Full name"
+            value={form.fullName}
+            onChange={set("fullName")}
+          />
           <TextField
             id="p-title"
             label="Current title"

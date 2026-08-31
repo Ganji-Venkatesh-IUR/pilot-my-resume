@@ -2,7 +2,6 @@ import type { CSSProperties, ReactNode } from "react";
 import { getTemplate, normalizeStyle } from "@/lib/resume-schema";
 import type { ResumeContent, SectionId, TemplateId } from "@/lib/resume-schema";
 
-
 /** Inline-editable text node. Commits on blur so typing never fights React state. */
 function Editable({
   value,
@@ -100,7 +99,6 @@ export function ResumePreview({
       {label}
     </h3>
   );
-
 
   const contact = [resume.email, resume.phone, resume.location, ...resume.links].filter(Boolean);
 
@@ -396,9 +394,10 @@ export function ResumePreview({
             onCommit={(v) => patch({ headline: v })}
           />
         </p>
-        {contact.length > 0 && <p className="mt-1 text-muted-foreground">{contact.join("  •  ")}</p>}
+        {contact.length > 0 && (
+          <p className="mt-1 text-muted-foreground">{contact.join("  •  ")}</p>
+        )}
       </header>
-
 
       {isSidebar && visible.includes("skills") ? (
         <div className="mt-4 grid gap-6 sm:grid-cols-[1fr_200px]">

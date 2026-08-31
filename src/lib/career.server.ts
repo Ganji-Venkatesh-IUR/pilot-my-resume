@@ -52,10 +52,7 @@ function toRow(input: Partial<CareerEntryInput>) {
 }
 
 /** Full knowledge profile: personal info from `profiles` + all entries. */
-export async function loadCareerProfile(
-  supabase: Client,
-  userId: string,
-): Promise<CareerProfile> {
+export async function loadCareerProfile(supabase: Client, userId: string): Promise<CareerProfile> {
   const [profileRes, entriesRes] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
     supabase
@@ -144,13 +141,13 @@ export async function deleteEntry(supabase: Client, id: string): Promise<void> {
 }
 
 /** Persist a new ordering for one kind (drag/move up-down in the UI). */
-export async function reorderEntries(
-  supabase: Client,
-  ids: string[],
-): Promise<void> {
+export async function reorderEntries(supabase: Client, ids: string[]): Promise<void> {
   await Promise.all(
     ids.map((id, index) =>
-      supabase.from("career_entries").update({ position: index } as never).eq("id", id),
+      supabase
+        .from("career_entries")
+        .update({ position: index } as never)
+        .eq("id", id),
     ),
   );
 }

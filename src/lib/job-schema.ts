@@ -52,7 +52,8 @@ export const emptyAnalysis: JobAnalysis = {
 const str = (v: unknown, fallback = ""): string => (typeof v === "string" ? v.trim() : fallback);
 const strArray = (v: unknown, limit = 40): string[] =>
   Array.isArray(v)
-    ? v.filter((i): i is string => typeof i === "string" && i.trim().length > 0)
+    ? v
+        .filter((i): i is string => typeof i === "string" && i.trim().length > 0)
         .map((i) => i.trim())
         .slice(0, limit)
     : [];

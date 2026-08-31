@@ -12,7 +12,11 @@ import { normalizeAnalysis, normalizeMatch, type JobAnalysis, type JobMatch } fr
 
 /** Parse model output as JSON, tolerating stray code fences. */
 export function parseJson(raw: string, context: string): unknown {
-  const cleaned = raw.trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+  const cleaned = raw
+    .trim()
+    .replace(/^```(?:json)?/i, "")
+    .replace(/```$/, "")
+    .trim();
   try {
     return JSON.parse(cleaned);
   } catch {
@@ -24,7 +28,12 @@ function check<S extends z.ZodTypeAny>(schema: S, value: unknown, context: strin
   const result = schema.safeParse(value);
   if (!result.success) {
     console.error(
-      JSON.stringify({ scope: "ai", event: "validation.failed", context, issues: result.error.issues.slice(0, 5) }),
+      JSON.stringify({
+        scope: "ai",
+        event: "validation.failed",
+        context,
+        issues: result.error.issues.slice(0, 5),
+      }),
     );
     throw new AiError(`AI returned invalid ${context} data. Please try again.`, "invalid_output");
   }

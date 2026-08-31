@@ -125,7 +125,10 @@ function TailorPage() {
           aria-labelledby="jd-heading"
           className="rounded-xl border border-border bg-card p-5 shadow-soft"
         >
-          <h2 id="jd-heading" className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          <h2
+            id="jd-heading"
+            className="text-xs font-semibold uppercase tracking-widest text-muted-foreground"
+          >
             New job description
           </h2>
 
@@ -284,8 +287,8 @@ function TailorPage() {
               <Target className="mx-auto size-8 text-muted-foreground" aria-hidden />
               <p className="mt-3 text-sm font-medium">No roles analyzed yet</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Paste your first job description and CareerPilot will show exactly where you
-                match — and where you don&apos;t.
+                Paste your first job description and CareerPilot will show exactly where you match —
+                and where you don&apos;t.
               </p>
             </div>
           )}

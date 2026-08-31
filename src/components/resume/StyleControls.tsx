@@ -1,12 +1,7 @@
 import { RotateCcw, Type } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import {
-  STYLE_LIMITS,
-  clampStyleValue,
-  defaultStyle,
-  type ResumeStyle,
-} from "@/lib/resume-schema";
+import { STYLE_LIMITS, clampStyleValue, defaultStyle, type ResumeStyle } from "@/lib/resume-schema";
 
 /**
  * Typography + spacing controls.

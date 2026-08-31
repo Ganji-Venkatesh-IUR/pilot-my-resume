@@ -1,614 +1,602 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.15"
-  }
+    PostgrestVersion: "14.15";
+  };
   public: {
     Tables: {
       ai_activity_logs: {
         Row: {
-          created_at: string
-          duration_ms: number | null
-          error_message: string | null
-          id: string
-          input_tokens: number | null
-          job_target_id: string | null
-          metadata: Json
-          model: string | null
-          output_tokens: number | null
-          prompt_version: string | null
-          resume_id: string | null
-          status: string
-          task: string
-          trace_id: string | null
-          upload_id: string | null
-          user_id: string
-        }
+          created_at: string;
+          duration_ms: number | null;
+          error_message: string | null;
+          id: string;
+          input_tokens: number | null;
+          job_target_id: string | null;
+          metadata: Json;
+          model: string | null;
+          output_tokens: number | null;
+          prompt_version: string | null;
+          resume_id: string | null;
+          status: string;
+          task: string;
+          trace_id: string | null;
+          upload_id: string | null;
+          user_id: string;
+        };
         Insert: {
-          created_at?: string
-          duration_ms?: number | null
-          error_message?: string | null
-          id?: string
-          input_tokens?: number | null
-          job_target_id?: string | null
-          metadata?: Json
-          model?: string | null
-          output_tokens?: number | null
-          prompt_version?: string | null
-          resume_id?: string | null
-          status?: string
-          task: string
-          trace_id?: string | null
-          upload_id?: string | null
-          user_id: string
-        }
+          created_at?: string;
+          duration_ms?: number | null;
+          error_message?: string | null;
+          id?: string;
+          input_tokens?: number | null;
+          job_target_id?: string | null;
+          metadata?: Json;
+          model?: string | null;
+          output_tokens?: number | null;
+          prompt_version?: string | null;
+          resume_id?: string | null;
+          status?: string;
+          task: string;
+          trace_id?: string | null;
+          upload_id?: string | null;
+          user_id: string;
+        };
         Update: {
-          created_at?: string
-          duration_ms?: number | null
-          error_message?: string | null
-          id?: string
-          input_tokens?: number | null
-          job_target_id?: string | null
-          metadata?: Json
-          model?: string | null
-          output_tokens?: number | null
-          prompt_version?: string | null
-          resume_id?: string | null
-          status?: string
-          task?: string
-          trace_id?: string | null
-          upload_id?: string | null
-          user_id?: string
-        }
+          created_at?: string;
+          duration_ms?: number | null;
+          error_message?: string | null;
+          id?: string;
+          input_tokens?: number | null;
+          job_target_id?: string | null;
+          metadata?: Json;
+          model?: string | null;
+          output_tokens?: number | null;
+          prompt_version?: string | null;
+          resume_id?: string | null;
+          status?: string;
+          task?: string;
+          trace_id?: string | null;
+          upload_id?: string | null;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "ai_activity_logs_job_target_id_fkey"
-            columns: ["job_target_id"]
-            isOneToOne: false
-            referencedRelation: "job_targets"
-            referencedColumns: ["id"]
+            foreignKeyName: "ai_activity_logs_job_target_id_fkey";
+            columns: ["job_target_id"];
+            isOneToOne: false;
+            referencedRelation: "job_targets";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "ai_activity_logs_resume_id_fkey"
-            columns: ["resume_id"]
-            isOneToOne: false
-            referencedRelation: "resumes"
-            referencedColumns: ["id"]
+            foreignKeyName: "ai_activity_logs_resume_id_fkey";
+            columns: ["resume_id"];
+            isOneToOne: false;
+            referencedRelation: "resumes";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "ai_activity_logs_upload_id_fkey"
-            columns: ["upload_id"]
-            isOneToOne: false
-            referencedRelation: "uploads"
-            referencedColumns: ["id"]
+            foreignKeyName: "ai_activity_logs_upload_id_fkey";
+            columns: ["upload_id"];
+            isOneToOne: false;
+            referencedRelation: "uploads";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       career_entries: {
         Row: {
-          bullets: Json
-          created_at: string
-          description: string | null
-          end_date: string | null
-          id: string
-          is_current: boolean
-          kind: string
-          level: string | null
-          location: string | null
-          metadata: Json
-          organization: string | null
-          position: number
-          start_date: string | null
-          subtitle: string | null
-          tags: Json
-          title: string
-          updated_at: string
-          url: string | null
-          user_id: string
-        }
+          bullets: Json;
+          created_at: string;
+          description: string | null;
+          end_date: string | null;
+          id: string;
+          is_current: boolean;
+          kind: string;
+          level: string | null;
+          location: string | null;
+          metadata: Json;
+          organization: string | null;
+          position: number;
+          start_date: string | null;
+          subtitle: string | null;
+          tags: Json;
+          title: string;
+          updated_at: string;
+          url: string | null;
+          user_id: string;
+        };
         Insert: {
-          bullets?: Json
-          created_at?: string
-          description?: string | null
-          end_date?: string | null
-          id?: string
-          is_current?: boolean
-          kind: string
-          level?: string | null
-          location?: string | null
-          metadata?: Json
-          organization?: string | null
-          position?: number
-          start_date?: string | null
-          subtitle?: string | null
-          tags?: Json
-          title?: string
-          updated_at?: string
-          url?: string | null
-          user_id: string
-        }
+          bullets?: Json;
+          created_at?: string;
+          description?: string | null;
+          end_date?: string | null;
+          id?: string;
+          is_current?: boolean;
+          kind: string;
+          level?: string | null;
+          location?: string | null;
+          metadata?: Json;
+          organization?: string | null;
+          position?: number;
+          start_date?: string | null;
+          subtitle?: string | null;
+          tags?: Json;
+          title?: string;
+          updated_at?: string;
+          url?: string | null;
+          user_id: string;
+        };
         Update: {
-          bullets?: Json
-          created_at?: string
-          description?: string | null
-          end_date?: string | null
-          id?: string
-          is_current?: boolean
-          kind?: string
-          level?: string | null
-          location?: string | null
-          metadata?: Json
-          organization?: string | null
-          position?: number
-          start_date?: string | null
-          subtitle?: string | null
-          tags?: Json
-          title?: string
-          updated_at?: string
-          url?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
+          bullets?: Json;
+          created_at?: string;
+          description?: string | null;
+          end_date?: string | null;
+          id?: string;
+          is_current?: boolean;
+          kind?: string;
+          level?: string | null;
+          location?: string | null;
+          metadata?: Json;
+          organization?: string | null;
+          position?: number;
+          start_date?: string | null;
+          subtitle?: string | null;
+          tags?: Json;
+          title?: string;
+          updated_at?: string;
+          url?: string | null;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       job_targets: {
         Row: {
-          analysis: Json | null
-          base_resume_id: string | null
-          company: string | null
-          created_at: string
-          id: string
-          jd_text: string
-          match: Json | null
-          match_score: number | null
-          status: string
-          tailored_resume_id: string | null
-          title: string
-          updated_at: string
-          user_id: string
-        }
+          analysis: Json | null;
+          base_resume_id: string | null;
+          company: string | null;
+          created_at: string;
+          id: string;
+          jd_text: string;
+          match: Json | null;
+          match_score: number | null;
+          status: string;
+          tailored_resume_id: string | null;
+          title: string;
+          updated_at: string;
+          user_id: string;
+        };
         Insert: {
-          analysis?: Json | null
-          base_resume_id?: string | null
-          company?: string | null
-          created_at?: string
-          id?: string
-          jd_text: string
-          match?: Json | null
-          match_score?: number | null
-          status?: string
-          tailored_resume_id?: string | null
-          title?: string
-          updated_at?: string
-          user_id: string
-        }
+          analysis?: Json | null;
+          base_resume_id?: string | null;
+          company?: string | null;
+          created_at?: string;
+          id?: string;
+          jd_text: string;
+          match?: Json | null;
+          match_score?: number | null;
+          status?: string;
+          tailored_resume_id?: string | null;
+          title?: string;
+          updated_at?: string;
+          user_id: string;
+        };
         Update: {
-          analysis?: Json | null
-          base_resume_id?: string | null
-          company?: string | null
-          created_at?: string
-          id?: string
-          jd_text?: string
-          match?: Json | null
-          match_score?: number | null
-          status?: string
-          tailored_resume_id?: string | null
-          title?: string
-          updated_at?: string
-          user_id?: string
-        }
+          analysis?: Json | null;
+          base_resume_id?: string | null;
+          company?: string | null;
+          created_at?: string;
+          id?: string;
+          jd_text?: string;
+          match?: Json | null;
+          match_score?: number | null;
+          status?: string;
+          tailored_resume_id?: string | null;
+          title?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "job_targets_base_resume_id_fkey"
-            columns: ["base_resume_id"]
-            isOneToOne: false
-            referencedRelation: "resumes"
-            referencedColumns: ["id"]
+            foreignKeyName: "job_targets_base_resume_id_fkey";
+            columns: ["base_resume_id"];
+            isOneToOne: false;
+            referencedRelation: "resumes";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "job_targets_tailored_resume_id_fkey"
-            columns: ["tailored_resume_id"]
-            isOneToOne: false
-            referencedRelation: "resumes"
-            referencedColumns: ["id"]
+            foreignKeyName: "job_targets_tailored_resume_id_fkey";
+            columns: ["tailored_resume_id"];
+            isOneToOne: false;
+            referencedRelation: "resumes";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       profiles: {
         Row: {
-          created_at: string
-          email: string | null
-          full_name: string | null
-          github_url: string | null
-          headline: string | null
-          id: string
-          job_title: string | null
-          linkedin_url: string | null
-          location: string | null
-          phone: string | null
-          summary: string | null
-          updated_at: string
-          website_url: string | null
-        }
+          created_at: string;
+          email: string | null;
+          full_name: string | null;
+          github_url: string | null;
+          headline: string | null;
+          id: string;
+          job_title: string | null;
+          linkedin_url: string | null;
+          location: string | null;
+          phone: string | null;
+          summary: string | null;
+          updated_at: string;
+          website_url: string | null;
+        };
         Insert: {
-          created_at?: string
-          email?: string | null
-          full_name?: string | null
-          github_url?: string | null
-          headline?: string | null
-          id: string
-          job_title?: string | null
-          linkedin_url?: string | null
-          location?: string | null
-          phone?: string | null
-          summary?: string | null
-          updated_at?: string
-          website_url?: string | null
-        }
+          created_at?: string;
+          email?: string | null;
+          full_name?: string | null;
+          github_url?: string | null;
+          headline?: string | null;
+          id: string;
+          job_title?: string | null;
+          linkedin_url?: string | null;
+          location?: string | null;
+          phone?: string | null;
+          summary?: string | null;
+          updated_at?: string;
+          website_url?: string | null;
+        };
         Update: {
-          created_at?: string
-          email?: string | null
-          full_name?: string | null
-          github_url?: string | null
-          headline?: string | null
-          id?: string
-          job_title?: string | null
-          linkedin_url?: string | null
-          location?: string | null
-          phone?: string | null
-          summary?: string | null
-          updated_at?: string
-          website_url?: string | null
-        }
-        Relationships: []
-      }
+          created_at?: string;
+          email?: string | null;
+          full_name?: string | null;
+          github_url?: string | null;
+          headline?: string | null;
+          id?: string;
+          job_title?: string | null;
+          linkedin_url?: string | null;
+          location?: string | null;
+          phone?: string | null;
+          summary?: string | null;
+          updated_at?: string;
+          website_url?: string | null;
+        };
+        Relationships: [];
+      };
       resume_templates: {
         Row: {
-          category: string
-          created_at: string
-          description: string
-          id: string
-          is_active: boolean
-          is_ats_safe: boolean
-          key: string
-          name: string
-          preview_image_url: string | null
-          sort_order: number
-          style_defaults: Json
-          updated_at: string
-        }
+          category: string;
+          created_at: string;
+          description: string;
+          id: string;
+          is_active: boolean;
+          is_ats_safe: boolean;
+          key: string;
+          name: string;
+          preview_image_url: string | null;
+          sort_order: number;
+          style_defaults: Json;
+          updated_at: string;
+        };
         Insert: {
-          category?: string
-          created_at?: string
-          description?: string
-          id?: string
-          is_active?: boolean
-          is_ats_safe?: boolean
-          key: string
-          name: string
-          preview_image_url?: string | null
-          sort_order?: number
-          style_defaults?: Json
-          updated_at?: string
-        }
+          category?: string;
+          created_at?: string;
+          description?: string;
+          id?: string;
+          is_active?: boolean;
+          is_ats_safe?: boolean;
+          key: string;
+          name: string;
+          preview_image_url?: string | null;
+          sort_order?: number;
+          style_defaults?: Json;
+          updated_at?: string;
+        };
         Update: {
-          category?: string
-          created_at?: string
-          description?: string
-          id?: string
-          is_active?: boolean
-          is_ats_safe?: boolean
-          key?: string
-          name?: string
-          preview_image_url?: string | null
-          sort_order?: number
-          style_defaults?: Json
-          updated_at?: string
-        }
-        Relationships: []
-      }
+          category?: string;
+          created_at?: string;
+          description?: string;
+          id?: string;
+          is_active?: boolean;
+          is_ats_safe?: boolean;
+          key?: string;
+          name?: string;
+          preview_image_url?: string | null;
+          sort_order?: number;
+          style_defaults?: Json;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       resume_versions: {
         Row: {
-          ats_score: number | null
-          content: Json
-          created_at: string
-          id: string
-          job_target_id: string | null
-          label: string | null
-          resume_id: string
-          source: string
-          template: string | null
-          updated_at: string
-          user_id: string
-          version_number: number
-        }
+          ats_score: number | null;
+          content: Json;
+          created_at: string;
+          id: string;
+          job_target_id: string | null;
+          label: string | null;
+          resume_id: string;
+          source: string;
+          template: string | null;
+          updated_at: string;
+          user_id: string;
+          version_number: number;
+        };
         Insert: {
-          ats_score?: number | null
-          content?: Json
-          created_at?: string
-          id?: string
-          job_target_id?: string | null
-          label?: string | null
-          resume_id: string
-          source?: string
-          template?: string | null
-          updated_at?: string
-          user_id: string
-          version_number?: number
-        }
+          ats_score?: number | null;
+          content?: Json;
+          created_at?: string;
+          id?: string;
+          job_target_id?: string | null;
+          label?: string | null;
+          resume_id: string;
+          source?: string;
+          template?: string | null;
+          updated_at?: string;
+          user_id: string;
+          version_number?: number;
+        };
         Update: {
-          ats_score?: number | null
-          content?: Json
-          created_at?: string
-          id?: string
-          job_target_id?: string | null
-          label?: string | null
-          resume_id?: string
-          source?: string
-          template?: string | null
-          updated_at?: string
-          user_id?: string
-          version_number?: number
-        }
+          ats_score?: number | null;
+          content?: Json;
+          created_at?: string;
+          id?: string;
+          job_target_id?: string | null;
+          label?: string | null;
+          resume_id?: string;
+          source?: string;
+          template?: string | null;
+          updated_at?: string;
+          user_id?: string;
+          version_number?: number;
+        };
         Relationships: [
           {
-            foreignKeyName: "resume_versions_job_target_id_fkey"
-            columns: ["job_target_id"]
-            isOneToOne: false
-            referencedRelation: "job_targets"
-            referencedColumns: ["id"]
+            foreignKeyName: "resume_versions_job_target_id_fkey";
+            columns: ["job_target_id"];
+            isOneToOne: false;
+            referencedRelation: "job_targets";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "resume_versions_resume_id_fkey"
-            columns: ["resume_id"]
-            isOneToOne: false
-            referencedRelation: "resumes"
-            referencedColumns: ["id"]
+            foreignKeyName: "resume_versions_resume_id_fkey";
+            columns: ["resume_id"];
+            isOneToOne: false;
+            referencedRelation: "resumes";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       resumes: {
         Row: {
-          ats_score: number | null
-          content: Json
-          created_at: string
-          github_url: string | null
-          id: string
-          linkedin_url: string | null
-          source_text: string | null
-          target_role: string | null
-          template: string
-          title: string
-          updated_at: string
-          user_id: string
-        }
+          ats_score: number | null;
+          content: Json;
+          created_at: string;
+          github_url: string | null;
+          id: string;
+          linkedin_url: string | null;
+          source_text: string | null;
+          target_role: string | null;
+          template: string;
+          title: string;
+          updated_at: string;
+          user_id: string;
+        };
         Insert: {
-          ats_score?: number | null
-          content?: Json
-          created_at?: string
-          github_url?: string | null
-          id?: string
-          linkedin_url?: string | null
-          source_text?: string | null
-          target_role?: string | null
-          template?: string
-          title?: string
-          updated_at?: string
-          user_id: string
-        }
+          ats_score?: number | null;
+          content?: Json;
+          created_at?: string;
+          github_url?: string | null;
+          id?: string;
+          linkedin_url?: string | null;
+          source_text?: string | null;
+          target_role?: string | null;
+          template?: string;
+          title?: string;
+          updated_at?: string;
+          user_id: string;
+        };
         Update: {
-          ats_score?: number | null
-          content?: Json
-          created_at?: string
-          github_url?: string | null
-          id?: string
-          linkedin_url?: string | null
-          source_text?: string | null
-          target_role?: string | null
-          template?: string
-          title?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
+          ats_score?: number | null;
+          content?: Json;
+          created_at?: string;
+          github_url?: string | null;
+          id?: string;
+          linkedin_url?: string | null;
+          source_text?: string | null;
+          target_role?: string | null;
+          template?: string;
+          title?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       uploads: {
         Row: {
-          created_at: string
-          error_message: string | null
-          extracted_text: string | null
-          file_name: string | null
-          file_size: number | null
-          file_type: string | null
-          id: string
-          kind: string
-          label: string
-          metadata: Json
-          source_url: string | null
-          status: string
-          storage_path: string | null
-          updated_at: string
-          user_id: string
-        }
+          created_at: string;
+          error_message: string | null;
+          extracted_text: string | null;
+          file_name: string | null;
+          file_size: number | null;
+          file_type: string | null;
+          id: string;
+          kind: string;
+          label: string;
+          metadata: Json;
+          source_url: string | null;
+          status: string;
+          storage_path: string | null;
+          updated_at: string;
+          user_id: string;
+        };
         Insert: {
-          created_at?: string
-          error_message?: string | null
-          extracted_text?: string | null
-          file_name?: string | null
-          file_size?: number | null
-          file_type?: string | null
-          id?: string
-          kind?: string
-          label: string
-          metadata?: Json
-          source_url?: string | null
-          status?: string
-          storage_path?: string | null
-          updated_at?: string
-          user_id: string
-        }
+          created_at?: string;
+          error_message?: string | null;
+          extracted_text?: string | null;
+          file_name?: string | null;
+          file_size?: number | null;
+          file_type?: string | null;
+          id?: string;
+          kind?: string;
+          label: string;
+          metadata?: Json;
+          source_url?: string | null;
+          status?: string;
+          storage_path?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
         Update: {
-          created_at?: string
-          error_message?: string | null
-          extracted_text?: string | null
-          file_name?: string | null
-          file_size?: number | null
-          file_type?: string | null
-          id?: string
-          kind?: string
-          label?: string
-          metadata?: Json
-          source_url?: string | null
-          status?: string
-          storage_path?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-    }
+          created_at?: string;
+          error_message?: string | null;
+          extracted_text?: string | null;
+          file_name?: string | null;
+          file_size?: number | null;
+          file_type?: string | null;
+          id?: string;
+          kind?: string;
+          label?: string;
+          metadata?: Json;
+          source_url?: string | null;
+          status?: string;
+          storage_path?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Enums: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+      Row: infer R;
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R;
       }
       ? R
       : never
-    : never
+    : never;
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+      Insert: infer I;
     }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
+        Insert: infer I;
       }
       ? I
       : never
-    : never
+    : never;
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+      Update: infer U;
     }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
+        Update: infer U;
       }
       ? U
       : never
-    : never
+    : never;
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+    : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    keyof DefaultSchema["CompositeTypes"] | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+    : never;
 
 export const Constants = {
   public: {
     Enums: {},
   },
-} as const
+} as const;

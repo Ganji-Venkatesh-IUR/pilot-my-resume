@@ -18,12 +18,7 @@ export class AiError extends Error {
   constructor(
     message: string,
     readonly code:
-      | "unconfigured"
-      | "rate_limited"
-      | "no_credits"
-      | "upstream"
-      | "timeout"
-      | "invalid_output",
+      "unconfigured" | "rate_limited" | "no_credits" | "upstream" | "timeout" | "invalid_output",
   ) {
     super(message);
     this.name = "AiError";

@@ -21,9 +21,7 @@ const A4_CONTENT_WIDTH_MM = 210;
 
 /** Collects <style> and <link rel=stylesheet> markup from the host document. */
 function collectStyles(): string {
-  return Array.from(
-    document.querySelectorAll<HTMLElement>('style, link[rel="stylesheet"]'),
-  )
+  return Array.from(document.querySelectorAll<HTMLElement>('style, link[rel="stylesheet"]'))
     .map((node) => node.outerHTML)
     .join("\n");
 }

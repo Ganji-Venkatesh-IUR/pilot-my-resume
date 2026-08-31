@@ -80,9 +80,7 @@ function UploadCenter() {
         await uploadService.uploadFile(file, (pct) =>
           setQueue((q) => q.map((i) => (i.id === id ? { ...i, progress: pct } : i))),
         );
-        setQueue((q) =>
-          q.map((i) => (i.id === id ? { ...i, progress: 100, status: "done" } : i)),
-        );
+        setQueue((q) => q.map((i) => (i.id === id ? { ...i, progress: 100, status: "done" } : i)));
         toast.success(`${file.name} uploaded`);
         await refresh();
         setTimeout(() => setQueue((q) => q.filter((i) => i.id !== id)), 4000);
@@ -139,10 +137,10 @@ function UploadCenter() {
       .filter((u) => u.extracted_text)
       .map((u) => `--- ${u.label} ---\n${u.extracted_text}`)
       .join("\n\n");
-    const combined = [notes.trim(), extracted].filter(Boolean).join("\n\n").slice(
-      0,
-      MAX_EXTRACT_CHARS,
-    );
+    const combined = [notes.trim(), extracted]
+      .filter(Boolean)
+      .join("\n\n")
+      .slice(0, MAX_EXTRACT_CHARS);
     const github = uploads.find((u) => u.kind === "github")?.source_url ?? "";
     const linkedin = uploads.find((u) => u.kind === "linkedin")?.source_url ?? "";
 

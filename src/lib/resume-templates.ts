@@ -98,14 +98,7 @@ export const TEMPLATES: TemplateDescriptor[] = [
     headingRule: true,
     accentHeadings: false,
     headingTracking: "0.14em",
-    preferredOrder: [
-      "summary",
-      "education",
-      "projects",
-      "skills",
-      "experience",
-      "certifications",
-    ],
+    preferredOrder: ["summary", "education", "projects", "skills", "experience", "certifications"],
   },
   {
     id: "devstack",
@@ -121,14 +114,7 @@ export const TEMPLATES: TemplateDescriptor[] = [
     headingRule: true,
     accentHeadings: true,
     headingTracking: "0.1em",
-    preferredOrder: [
-      "summary",
-      "skills",
-      "experience",
-      "projects",
-      "education",
-      "certifications",
-    ],
+    preferredOrder: ["summary", "skills", "experience", "projects", "education", "certifications"],
   },
   {
     id: "meridian",

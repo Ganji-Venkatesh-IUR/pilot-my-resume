@@ -79,7 +79,11 @@ function ResumeEditor() {
   const future = useRef<ResumeContent[]>([]);
   const [historyTick, setHistoryTick] = useState(0);
 
-  const { data: row, isLoading, error } = useQuery({
+  const {
+    data: row,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["resume", resumeId],
     queryFn: () => runFetch({ data: { resumeId } }),
   });
@@ -369,12 +373,8 @@ function ResumeEditor() {
       <div className="grid gap-5 lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[220px_minmax(0,1fr)_360px]">
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start print:hidden">
           <SectionSidebar layout={resume.layout} counts={counts} onChange={handleLayout} />
-          <StyleControls
-            style={resume.style}
-            onChange={(style) => commit({ ...resume, style })}
-          />
+          <StyleControls style={resume.style} onChange={(style) => commit({ ...resume, style })} />
         </aside>
-
 
         <div>
           {hasContent ? (

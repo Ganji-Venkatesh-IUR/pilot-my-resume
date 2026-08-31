@@ -60,7 +60,9 @@ describe("formatPeriod", () => {
   });
 
   it("renders a closed range", () => {
-    expect(formatPeriod({ startDate: "2013", endDate: "2017", isCurrent: false })).toContain("2017");
+    expect(formatPeriod({ startDate: "2013", endDate: "2017", isCurrent: false })).toContain(
+      "2017",
+    );
   });
 });
 

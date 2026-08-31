@@ -120,7 +120,9 @@ function ResetPasswordPage() {
                   autoComplete="new-password"
                   aria-invalid={Boolean(errors["confirm"])}
                 />
-                {errors["confirm"] && <p className="text-sm text-destructive">{errors["confirm"]}</p>}
+                {errors["confirm"] && (
+                  <p className="text-sm text-destructive">{errors["confirm"]}</p>
+                )}
               </div>
               <Button type="submit" className="w-full" disabled={busy}>
                 {busy && <Spinner />}
