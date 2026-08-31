@@ -3,8 +3,7 @@ import type { Json } from "@/integrations/supabase/types";
 import { validateLink, type LinkKind } from "@/lib/upload-links";
 
 /** Bucket holding raw career documents, private per user folder. */
-export const UPLOAD_BUCKET = "career-uploads";
-
+export const UPLOAD_BUCKET = "resumes";
 /** Hard cap enforced client-side and by the bucket itself. */
 export const MAX_FILE_BYTES = 10 * 1024 * 1024;
 
