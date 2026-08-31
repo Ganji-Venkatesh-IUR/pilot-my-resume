@@ -24,6 +24,7 @@ import {
   SurfaceCard,
 } from "@/components/dashboard/DashboardCards";
 import { resumeService, type ResumeSummary } from "@/services/resume.service";
+import { uploadService, type UploadRecord } from "@/services/upload.service";
 import { profileService } from "@/services/profile.service";
 import { useSession } from "@/hooks/useSession";
 import { formatDate, formatRelative } from "@/utils/format";
@@ -76,7 +77,10 @@ function buildSuggestions(resumes: ResumeSummary[], completion: number) {
     [];
 
   if (resumes.length === 0) {
-    suggestions.push({ text: "Upload your current resume to get a first ATS score.", to: "/upload" });
+    suggestions.push({
+      text: "Upload your current resume to get a first ATS score.",
+      to: "/upload",
+    });
   }
   if (completion < 100) {
     suggestions.push({
@@ -114,6 +118,10 @@ function Dashboard() {
     queryKey: ["resumes"],
     queryFn: () => resumeService.list(),
   });
+  const { data: uploads, isLoading: loadingUploads } = useQuery({
+    queryKey: ["uploads"],
+    queryFn: () => uploadService.list(),
+  });
   const { data: profile, isLoading: loadingProfile } = useQuery({
     queryKey: ["profile"],
     queryFn: () => profileService.getCurrent(),
@@ -138,7 +146,7 @@ function Dashboard() {
   const completion = Math.round((filled / profileFields.length) * 100);
 
   const firstName = (profile?.full_name || user?.email || "there").split(/[\s@]/)[0];
-  const uploads = list.filter((r) => r.source_text || r.github_url || r.linkedin_url).slice(0, 4);
+  const recentUploads = (uploads ?? []).slice(0, 4);
   const suggestions = buildSuggestions(list, completion);
 
   return (
@@ -166,7 +174,9 @@ function Dashboard() {
         <StatCard
           label="Average ATS"
           value={avgAts === null ? "—" : String(avgAts)}
-          hint={scored.length ? `across ${scored.length} scored resumes` : "score a resume to see this"}
+          hint={
+            scored.length ? `across ${scored.length} scored resumes` : "score a resume to see this"
+          }
           icon={Gauge}
           loading={loadingResumes}
         />
@@ -273,9 +283,9 @@ function Dashboard() {
               </Link>
             }
           >
-            {loadingResumes ? (
+            {loadingUploads ? (
               <ListSkeleton rows={2} />
-            ) : uploads.length === 0 ? (
+            ) : recentUploads.length === 0 ? (
               <EmptyState
                 message="No sources imported yet."
                 actionLabel="Add a source"
@@ -283,24 +293,30 @@ function Dashboard() {
               />
             ) : (
               <ul className="space-y-3">
-                {uploads.map((item) => {
-                  const SourceIcon = item.github_url
-                    ? Github
-                    : item.linkedin_url
-                      ? Linkedin
-                      : UploadCloud;
-                  const source = item.github_url
-                    ? "GitHub import"
-                    : item.linkedin_url
-                      ? "LinkedIn import"
-                      : "Pasted resume";
+                {recentUploads.map((item) => {
+                  const SourceIcon =
+                    item.kind === "github"
+                      ? Github
+                      : item.kind === "linkedin"
+                        ? Linkedin
+                        : item.kind === "portfolio"
+                          ? UploadCloud
+                          : FileText;
+                  const source =
+                    item.kind === "github"
+                      ? "GitHub import"
+                      : item.kind === "linkedin"
+                        ? "LinkedIn import"
+                        : item.kind === "portfolio"
+                          ? "Portfolio"
+                          : "Uploaded file";
                   return (
                     <li key={item.id} className="flex items-center gap-3">
                       <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                         <SourceIcon className="size-4" aria-hidden />
                       </span>
                       <span className="min-w-0">
-                        <span className="block truncate text-sm font-medium">{item.title}</span>
+                        <span className="block truncate text-sm font-medium">{item.label}</span>
                         <span className="block truncate text-xs text-muted-foreground">
                           {source} · {formatDate(item.created_at)}
                         </span>
