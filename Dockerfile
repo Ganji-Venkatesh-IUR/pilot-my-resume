@@ -37,6 +37,6 @@ RUN addgroup -S app && adduser -S app -G app
 COPY --from=build --chown=app:app /app/.output ./.output
 USER app
 EXPOSE 3000
-# Server-only secrets (SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, LOVABLE_API_KEY)
+# Server-only secrets (SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, OPENAI_API_KEY)
 # are injected at runtime by the platform — never baked into the image.
 CMD ["node", ".output/server/index.mjs"]

@@ -8,12 +8,12 @@ Covers the four flows that must never break:
   3. Generation  — resume workspace loads with preview + copilot panels
   4. Export      — the PDF export / print controls are present and enabled
 
-Run:      bun run test:e2e
-Options:  E2E_BASE_URL (default http://localhost:8080)
+Run:      npm run test:e2e
+Options:  E2E_BASE_URL (default http://localhost:5173)
 
 When a Supabase session is available in the environment
-(LOVABLE_BROWSER_SUPABASE_* injected by the platform, or a session minted with
-`lovable auth-session --json`), the authenticated flows run too; otherwise the
+(SUPABASE_BROWSER_* injected by the test environment, or a session minted
+with your authentication flow), the authenticated flows run too; otherwise the
 suite verifies the redirect-to-auth behaviour and skips them with a clear note.
 Secrets are only restored into the browser — never printed.
 """
@@ -26,7 +26,7 @@ from pathlib import Path
 
 from playwright.async_api import async_playwright
 
-BASE_URL = os.environ.get("E2E_BASE_URL", "http://localhost:8080")
+BASE_URL = os.environ.get("E2E_BASE_URL", "http://localhost:5173")
 SHOTS = Path(__file__).parent / "screenshots"
 SHOTS.mkdir(parents=True, exist_ok=True)
 
@@ -39,17 +39,12 @@ def record(name: str, ok: bool, detail: str = "") -> None:
 
 
 def load_session() -> tuple[str | None, str | None, str | None]:
-    """Return (storage_key, session_json, cookies_json) from env or minted file."""
-    key = os.environ.get("LOVABLE_BROWSER_SUPABASE_STORAGE_KEY")
-    session = os.environ.get("LOVABLE_BROWSER_SUPABASE_SESSION_JSON")
-    cookies = os.environ.get("LOVABLE_BROWSER_SUPABASE_COOKIES_JSON")
+    """Return (storage_key, session_json, cookies_json) from env or auth cache."""
+    key = os.environ.get("SUPABASE_BROWSER_SESSION_KEY")
+    session = os.environ.get("SUPABASE_BROWSER_SESSION_JSON")
+    cookies = os.environ.get("SUPABASE_BROWSER_COOKIES_JSON")
     if key and session:
         return key, session, cookies
-
-    minted = Path.home() / ".cache" / "lovable-auth" / "session.json"
-    if minted.exists():
-        data = json.loads(minted.read_text())
-        return data["storage_key"], json.dumps(data["session"]), json.dumps(data.get("cookies", []))
     return None, None, None
 
 

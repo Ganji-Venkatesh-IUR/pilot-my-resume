@@ -51,9 +51,9 @@ describe("callGateway", () => {
   });
 
   it("fails fast when AI is not configured", async () => {
-    const key = process.env["LOVABLE_API_KEY"];
-    delete process.env["LOVABLE_API_KEY"];
+    const key = process.env["OPENAI_API_KEY"];
+    delete process.env["OPENAI_API_KEY"];
     await expect(callGateway(messages)).rejects.toMatchObject({ code: "unconfigured" });
-    process.env["LOVABLE_API_KEY"] = key;
+    process.env["OPENAI_API_KEY"] = key;
   });
 });

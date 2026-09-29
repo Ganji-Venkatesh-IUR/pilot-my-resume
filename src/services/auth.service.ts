@@ -1,5 +1,4 @@
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 
 export interface Credentials {
   email: string;
@@ -29,11 +28,15 @@ export const authService = {
 
   /** Returns true when the browser was redirected to the provider. */
   async signInWithGoogle(): Promise<boolean> {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/login`,
+      },
     });
-    if (result.error) throw new Error("Google sign-in failed. Please try again.");
-    return Boolean(result.redirected);
+    if (error) throw new Error("Google sign-in failed. Please try again.");
+    // Supabase redirects the browser, so if we reach here without error, redirect was initiated
+    return true;
   },
 
   /** Sends a reset link that lands on /reset-password. */

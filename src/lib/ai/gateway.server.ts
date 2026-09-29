@@ -1,15 +1,18 @@
 /**
- * Lovable AI Gateway client (server-only).
+ * AI API client (server-only).
  *
- * Single place where CareerPilot talks to a model: timeouts, retries on
+ * Single place where CareerPilot talks to an AI model: timeouts, retries on
  * transient failures, JSON parsing and structured logging live here so the
  * feature services stay free of transport concerns.
+ *
+ * Currently configured for OpenAI (GPT-4 or GPT-3.5-turbo).
+ * To use a different provider, replace the GATEWAY_URL and update request/response formats.
  */
 import { createTaskLog, type TaskLog } from "./logger.server";
 import type { PromptTemplate } from "./prompts.server";
 
-const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
-const DEFAULT_MODEL = "google/gemini-3.5-flash";
+const GATEWAY_URL = "https://api.openai.com/v1/chat/completions";
+const DEFAULT_MODEL = "gpt-3.5-turbo";
 const TIMEOUT_MS = 60_000;
 const MAX_ATTEMPTS = 3;
 
@@ -18,7 +21,12 @@ export class AiError extends Error {
   constructor(
     message: string,
     readonly code:
-      "unconfigured" | "rate_limited" | "no_credits" | "upstream" | "timeout" | "invalid_output",
+      | "unconfigured"
+      | "rate_limited"
+      | "no_credits"
+      | "upstream"
+      | "timeout"
+      | "invalid_output",
   ) {
     super(message);
     this.name = "AiError";
@@ -33,7 +41,7 @@ export async function callGateway(
   options?: { log?: TaskLog | undefined; model?: string | undefined },
 ): Promise<string> {
   const log = options?.log ?? createTaskLog("ai.raw");
-  const apiKey = process.env["LOVABLE_API_KEY"];
+  const apiKey = process.env["OPENAI_API_KEY"];
   if (!apiKey) throw new AiError("AI is not configured for this project.", "unconfigured");
 
   const promptChars = messages.reduce((n, m) => n + m.content.length, 0);

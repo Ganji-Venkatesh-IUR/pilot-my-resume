@@ -2,46 +2,43 @@
 
 CareerPilot AI ships as a single full-stack bundle: the React client plus the
 server-function API layer (auth-guarded resume, upload, AI orchestration and
-job-analysis endpoints) build into `.output`. The managed Postgres database,
-auth and storage run in Lovable Cloud.
+job-analysis endpoints) build into `.output`. The PostgreSQL database,
+authentication and storage are hosted via Supabase.
 
-## 1. Hosting approach (recommended)
+## 1. Architecture
 
-| Concern | Choice | Why |
+| Component | Hosting | Service |
 |---|---|---|
-| App (client + API) | Lovable publish (Cloudflare edge) | One click, global CDN, zero infra to babysit |
-| Database / auth / storage | Lovable Cloud (managed Postgres) | Migrations, RLS and backups already wired |
-| Portable fallback | Docker image (`Dockerfile`) on Fly.io / Render / Cloud Run | Same artifact runs anywhere Node 22 runs |
-
-Publishing from Lovable is the default path. The container exists so the same
-build can be moved to any host without code changes — a useful answer in an
-interview about vendor lock-in.
+| Frontend & API | Cloudflare Workers, Vercel, Render, Fly.io, Cloud Run | Any Node.js-compatible platform |
+| Database & Auth | Supabase (managed PostgreSQL) | Authentication, storage, RLS policies |
+| File Storage | Supabase Storage or S3-compatible | Resume uploads and artifacts |
 
 ## 2. Environments
 
-| Environment | Purpose | Data |
+| Environment | Purpose | Supabase Project |
 |---|---|---|
-| Local (`bun run dev`, port 8080) | Development | Dev backend project |
-| Preview | Every saved change, shareable | Dev backend project |
-| Production (published URL) | Live users | Prod backend project |
+| Local (`npm run dev`, port 5173) | Development | Dev/test Supabase project |
+| Production | Live users | Production Supabase project |
 
-Backend changes (migrations, server functions) deploy immediately. Frontend
-changes go live when you click **Update** in the publish dialog.
+Backend changes (migrations, server functions) deploy when the container is updated. Frontend
+changes are served immediately with the next bundle.
 
 ## 3. Environment variables
 
 Two classes, and mixing them up is the most common deployment bug:
 
 - **Client-visible** — `VITE_*`. Inlined into the browser bundle at build time,
-  so they must exist during `bun run build` (see the Docker build args). Only
-  publishable values belong here.
-- **Server-only** — `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`,
-  `LOVABLE_API_KEY`. Read with `process.env[...]` **inside** a server-function
+  so they must exist during `npm run build`. Only publishable values belong here.
+- **Server-only** — `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
+  `OPENAI_API_KEY`. Read with `process.env[...]` **inside** a server-function
   handler, injected at runtime, never baked into an image or committed.
 
-Copy `.env.example` to `.env` for local work. On Lovable, secrets are managed
-in the project's secret store, not in a committed `.env`. On Fly/Render/Cloud
-Run use `fly secrets set`, dashboard env vars, or Secret Manager respectively.
+Copy `.env.example` to `.env` for local work. On cloud platforms:
+- **Vercel/Netlify**: use dashboard environment variables
+- **Fly.io**: use `fly secrets set`
+- **Render**: use dashboard environment variables
+- **Cloud Run/Cloud Functions**: use Secret Manager or environment variable overrides
+
 Rotating a secret only requires a restart — no rebuild — unless it is a `VITE_*`
 value, which needs a rebuild.
 
@@ -49,25 +46,28 @@ value, which needs a rebuild.
 
 `.github/workflows/ci.yml` runs on every push and PR:
 
-1. `bun install --frozen-lockfile` — reproducible dependency tree
-2. `bun run lint` — ESLint + Prettier
-3. `bunx tsc --noEmit` — typecheck
-4. `bun run test` — Vitest unit, integration and DOM suites (see `docs/TESTING.md`)
-5. `bun run build` — production bundle, uploaded as an artifact
-6. On `main` only: `docker build` as a container smoke test
+1. `npm install --frozen-lockfile` — reproducible dependency tree
+2. `npm run lint` — ESLint + Prettier
+3. Type checking — TypeScript compilation
+4. `npm run test` — Vitest unit, integration and DOM suites (see `docs/TESTING.md`)
+5. `npm run build` — production bundle
+6. On `main` only: `docker build` as a container smoke test (optional)
 
 The pipeline is intentionally fail-fast and offline: tests never touch the
 network or a live database, so CI cannot go red because of a third party.
 
 ## 5. Deploying
 
-**Lovable (primary)**
+### Quick start: Vercel (recommended for beginners)
 
-1. Merge to `main` and let CI go green.
-2. Open the project and click **Publish** (or **Update** for a re-publish).
-3. Verify the published URL: landing page, sign-in, dashboard, PDF export.
+1. Push to GitHub
+2. Connect repository to [Vercel](https://vercel.com)
+3. Add environment variables (`.env.example` values)
+4. Deploy
 
-**Docker (portable)**
+Vercel automatically builds and deploys on every push to `main`.
+
+### Docker (portable to any cloud)
 
 ```bash
 docker build \
@@ -77,18 +77,39 @@ docker build \
   -t careerpilot:$(git rev-parse --short HEAD) .
 
 docker run -p 3000:3000 \
-  -e SUPABASE_URL -e SUPABASE_PUBLISHABLE_KEY -e LOVABLE_API_KEY \
+  -e SUPABASE_URL \
+  -e SUPABASE_PUBLISHABLE_KEY \
+  -e SUPABASE_SERVICE_ROLE_KEY \
+  -e OPENAI_API_KEY \
   careerpilot:$(git rev-parse --short HEAD)
 ```
 
 Tag images with the commit SHA — never only `latest` — so a rollback is a tag
 change rather than a rebuild.
 
+### Deploy to Fly.io
+
+```bash
+fly launch  # Creates fly.toml
+fly secrets set SUPABASE_URL SUPABASE_PUBLISHABLE_KEY SUPABASE_SERVICE_ROLE_KEY OPENAI_API_KEY
+fly deploy
+```
+
+### Deploy to Cloud Run (Google Cloud)
+
+```bash
+gcloud builds submit --tag gcr.io/$PROJECT_ID/careerpilot
+gcloud run deploy careerpilot \
+  --image gcr.io/$PROJECT_ID/careerpilot \
+  --platform managed \
+  --set-env-vars="SUPABASE_URL=$SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY" \
+  --set-secrets="SUPABASE_SERVICE_ROLE_KEY=supabase-service-role-key:latest,OPENAI_API_KEY=openai-api-key:latest"
+```
+
 ## 6. Rolling back
 
-- **App code**: revert the offending commit on `main` and re-publish, or
-  redeploy the previously tagged image (`careerpilot:<previous-sha>`). Lovable
-  also keeps version history you can restore from.
+- **App code**: revert the offending commit on `main` and redeploy, or
+  redeploy the previously tagged image (`careerpilot:<previous-sha>`).
 - **Database**: migrations are forward-only in production. Every migration ships
   with a documented downgrade path (`docs/DATABASE.md`); apply the downgrade as
   a *new* migration rather than editing history. Roll the app back first, then
@@ -105,3 +126,8 @@ change rather than a rebuild.
 - Public endpoints (`/api/public/*`) verify their caller
 - Dependency install uses a frozen lockfile plus the 24h supply-chain guard in
   `bunfig.toml`
+- HTTPS enforced on all endpoints
+- CORS policies restricted to your domain
+- Rate limiting implemented for public APIs
+- Database backups enabled in Supabase project settings
+

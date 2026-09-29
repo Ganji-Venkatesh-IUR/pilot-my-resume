@@ -7,7 +7,7 @@
  */
 import { afterEach, beforeEach, vi } from "vitest";
 
-process.env["LOVABLE_API_KEY"] = process.env["LOVABLE_API_KEY"] ?? "test-api-key";
+process.env["OPENAI_API_KEY"] = process.env["OPENAI_API_KEY"] ?? "test-api-key";
 process.env["SUPABASE_URL"] = process.env["SUPABASE_URL"] ?? "https://test.supabase.co";
 process.env["SUPABASE_PUBLISHABLE_KEY"] =
   process.env["SUPABASE_PUBLISHABLE_KEY"] ?? "sb_publishable_test";

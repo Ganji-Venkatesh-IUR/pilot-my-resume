@@ -1,6 +1,6 @@
 # CareerPilot AI — Database Schema
 
-PostgreSQL 15 (Lovable Cloud). Every table uses `uuid` primary keys (`gen_random_uuid()`),
+PostgreSQL 15 (hosted via Supabase). Every table uses `uuid` primary keys (`gen_random_uuid()`),
 `timestamptz` audit columns, foreign keys with explicit delete behaviour, row-level security
 scoped to `auth.uid()`, and explicit `GRANT`s for the Data API roles.
 
